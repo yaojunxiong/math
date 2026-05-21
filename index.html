@@ -1,77 +1,1309 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>乘法速记训练器</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#f6f7fb;--card:#fff;--text:#172033;--muted:#64748b;--primary:#2563eb;--good:#16a34a;--bad:#dc2626;--border:#e5e7eb;--shadow:0 18px 45px rgba(15,23,42,.1)}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:radial-gradient(circle at top left,#dbeafe 0,transparent 32%),var(--bg);color:var(--text);min-height:100vh}.app{max-width:1080px;margin:auto;padding:18px 14px 250px}header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.brand h1{margin:0;font-size:clamp(26px,5vw,44px);letter-spacing:-.04em}.small,.brand p{color:var(--muted);font-size:14px;line-height:1.55}.card{background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:26px;padding:16px;box-shadow:var(--shadow);margin:14px 0}.pill{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:9px 12px;border-radius:999px;font-weight:800}.auth-row,.profile-grid,.user-grid{display:grid;gap:10px;align-items:end}.auth-row{grid-template-columns:1fr auto auto auto}.profile-grid{grid-template-columns:1.1fr 1fr auto}.user-grid{grid-template-columns:1.1fr 1fr auto}.grid,.stats,.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tabs{grid-template-columns:repeat(3,1fr)}button{border:0;border-radius:18px;padding:13px 14px;background:#eef2ff;color:#1e293b;font-weight:850;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.97)}button.primary,button.active{background:var(--primary);color:white}button.danger{background:#fee2e2;color:#991b1b}button.warn{background:#fef3c7;color:#92400e}input,select{width:100%;border:1px solid var(--border);border-radius:16px;padding:12px 13px;font-size:16px;background:white}.label{color:var(--muted);font-size:13px}.stat{text-align:center;background:#f8fafc;border:1px solid var(--border);border-radius:20px;padding:12px}.value{font-size:25px;font-weight:950;margin-top:3px}.question-card{text-align:center}.progress-line{display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted);font-weight:800}.bar{flex:1;height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar>div{height:100%;width:0;background:linear-gradient(90deg,#60a5fa,#2563eb)}.question{font-size:clamp(54px,14vw,116px);line-height:1;font-weight:950;letter-spacing:-.06em;margin:14px 0}.answer-display{min-height:72px;border:3px dashed #cbd5e1;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:950;margin:16px auto 12px;max-width:340px;background:#f8fafc}.feedback{min-height:34px;font-size:22px;font-weight:950}.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}.summary,.panel{display:none}.summary.show,.panel.show{display:block}.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-top:10px}.item{border:1px solid var(--border);background:#f8fafc;border-radius:16px;padding:10px;font-weight:900;text-align:center}.table-wrap{overflow:auto;margin-top:10px}table{width:100%;border-collapse:separate;border-spacing:0 8px}td,th{text-align:left;padding:10px 12px;background:#f8fafc;border-top:1px solid var(--border);border-bottom:1px solid var(--border);white-space:nowrap}td:first-child,th:first-child{border-left:1px solid var(--border);border-radius:14px 0 0 14px}td:last-child,th:last-child{border-right:1px solid var(--border);border-radius:0 14px 14px 0}.keypad{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);border-top:1px solid var(--border);padding:10px max(12px,env(safe-area-inset-left)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-right));box-shadow:0 -10px 35px rgba(15,23,42,.1);z-index:10}.keypad-inner{max-width:580px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.key{font-size:26px;padding:15px 8px;border-radius:20px;background:#f1f5f9}.key.confirm{background:var(--primary);color:white}.key.delete{background:#fee2e2;color:#991b1b}.hidden{display:none!important}@media(max-width:760px){header{flex-direction:column}.auth-row,.profile-grid,.user-grid{grid-template-columns:1fr}.grid,.stats,.tabs{grid-template-columns:repeat(2,1fr)}.app{padding-bottom:250px}}
-</style></head>
+:root{
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#172033;
+  --muted:#64748b;
+  --primary:#2563eb;
+  --primary-weak:#dbeafe;
+  --good:#15803d;
+  --good-weak:#dcfce7;
+  --bad:#dc2626;
+  --bad-weak:#fee2e2;
+  --warn:#b45309;
+  --warn-weak:#fef3c7;
+  --line:#e2e8f0;
+  --panel:#f8fafc;
+  --shadow:0 16px 36px rgba(15,23,42,.09);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:linear-gradient(180deg,#eef4ff 0,#f7f8fb 260px,var(--bg) 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+.app{max-width:1120px;margin:auto;padding:18px 14px 250px}
+header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.brand h1{margin:0;font-size:38px;letter-spacing:0;line-height:1.1}
+.brand p,.small{color:var(--muted);font-size:14px;line-height:1.55}
+h2{font-size:21px;margin:0 0 12px;line-height:1.25;letter-spacing:0}
+.card{
+  background:rgba(255,255,255,.97);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  margin:14px 0;
+}
+.pill{
+  background:#eff6ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+  padding:9px 12px;
+  border-radius:999px;
+  font-weight:800;
+  margin-top:8px;
+  white-space:nowrap;
+}
+.auth-row,.profile-grid,.user-grid{display:grid;gap:10px;align-items:end}
+.auth-row{grid-template-columns:1fr auto auto auto}
+.profile-grid{grid-template-columns:1.1fr 1fr auto}
+.user-grid{grid-template-columns:1.1fr 1fr auto}
+.grid,.stats,.tabs,.daily-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tabs{grid-template-columns:repeat(3,1fr)}
+button{
+  border:0;
+  border-radius:10px;
+  padding:13px 14px;
+  background:#eef2ff;
+  color:#1e293b;
+  font-weight:850;
+  font-size:16px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+button:active{transform:scale(.98)}
+button:disabled{cursor:not-allowed;opacity:.58;transform:none}
+button.primary,button.active{background:var(--primary);color:white}
+button.danger{background:var(--bad-weak);color:#991b1b}
+button.warn{background:var(--warn-weak);color:#92400e}
+input,select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 13px;
+  font-size:16px;
+  background:white;
+}
+.label{color:var(--muted);font-size:13px}
+.stat{
+  text-align:center;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  min-width:0;
+}
+.value{font-size:25px;font-weight:950;margin-top:3px;overflow-wrap:anywhere}
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.section-head h2{margin:2px 0 6px}
+.daily-card{overflow:hidden}
+.daily-progress{margin:12px 0 14px}
+.daily-insight{
+  display:grid;
+  grid-template-columns:1.1fr 1.4fr;
+  gap:10px;
+  margin:12px 0;
+}
+.advice-box,.week-box,.badge-box{
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius:8px;
+  padding:12px;
+}
+.advice-box strong,.week-box strong,.badge-box strong{display:block;margin-bottom:8px}
+.advice-text{font-size:17px;font-weight:900;line-height:1.45}
+.week-map{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.week-day{
+  min-height:60px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:white;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  text-align:center;
+  font-weight:900;
+}
+.week-day.done{background:var(--good-weak);border-color:#86efac;color:#166534}
+.week-day.today{border-color:#2563eb;box-shadow:inset 0 0 0 1px #2563eb}
+.week-mark{font-size:20px;line-height:1}
+.week-label{font-size:12px;color:var(--muted);font-weight:800}
+.achievement-list{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
+.badge{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:10px 8px;
+  min-height:80px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+}
+.badge.unlocked{background:#f0fdf4;border-color:#86efac}
+.badge-icon{font-size:24px;line-height:1}
+.badge-title{font-size:13px;font-weight:950;line-height:1.25}
+.badge-meta{font-size:12px;color:var(--muted);line-height:1.3}
+.mission-road{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.mission{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:var(--panel);
+  min-height:150px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.mission.done{border-color:#86efac;background:var(--good-weak)}
+.mission.current{border-color:#93c5fd;background:#eff6ff}
+.mission-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mission-index{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:white;
+  border:1px solid var(--line);
+  font-weight:950;
+}
+.mission.done .mission-index{background:var(--good);color:white;border-color:var(--good)}
+.mission-title{font-weight:950;font-size:17px}
+.mission-meta{color:var(--muted);font-size:13px;line-height:1.45;flex:1}
+.mission button{width:100%;padding:10px 12px;font-size:14px}
+.level-track{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+.level-step{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:10px 8px;
+  text-align:center;
+  min-width:0;
+}
+.level-step strong{display:block;font-size:13px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.level-step.done{border-color:#86efac;background:#f0fdf4}
+.level-step.current{border-color:#2563eb;background:#eff6ff}
+.question-card{text-align:center}
+.progress-line{display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted);font-weight:800}
+.bar{flex:1;height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;min-width:80px}
+.bar>div{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#2563eb)}
+.question{font-size:88px;line-height:1;font-weight:950;letter-spacing:0;margin:16px 0}
+.answer-display{
+  min-height:72px;
+  border:3px dashed #cbd5e1;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  font-weight:950;
+  margin:16px auto 12px;
+  max-width:340px;
+  background:var(--panel);
+}
+.feedback{min-height:34px;font-size:22px;font-weight:950}
+.feedback.good{color:var(--good)}
+.feedback.bad{color:var(--bad)}
+.summary,.panel{display:none}
+.summary.show,.panel.show{display:block}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-top:10px}
+.item{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px;font-weight:900;text-align:center}
+.table-wrap{overflow:auto;margin-top:10px}
+table{width:100%;border-collapse:separate;border-spacing:0 8px}
+td,th{text-align:left;padding:10px 12px;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);white-space:nowrap}
+td:first-child,th:first-child{border-left:1px solid var(--line);border-radius:8px 0 0 8px}
+td:last-child,th:last-child{border-right:1px solid var(--line);border-radius:0 8px 8px 0}
+.keypad{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(255,255,255,.97);
+  border-top:1px solid var(--line);
+  padding:10px max(12px,env(safe-area-inset-left)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-right));
+  box-shadow:0 -10px 35px rgba(15,23,42,.1);
+  z-index:10;
+}
+.keypad-inner{max-width:580px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.key{font-size:26px;padding:15px 8px;border-radius:10px;background:#f1f5f9}
+.key.confirm{background:var(--primary);color:white}
+.key.delete{background:var(--bad-weak);color:#991b1b}
+.hidden{display:none!important}
+@media(max-width:860px){
+  header{flex-direction:column}
+  .brand h1{font-size:30px}
+  .auth-row,.profile-grid,.user-grid{grid-template-columns:1fr}
+  .grid,.stats,.daily-stats,.tabs{grid-template-columns:repeat(2,1fr)}
+  .daily-insight{grid-template-columns:1fr}
+  .mission-road{grid-template-columns:repeat(2,1fr)}
+  .level-track{grid-template-columns:repeat(3,1fr)}
+  .achievement-list{grid-template-columns:repeat(3,1fr)}
+  .section-head{flex-direction:column}
+  .section-head button{width:100%}
+  .question{font-size:60px}
+  .app{padding-bottom:250px}
+}
+@media(min-width:861px){
+  .app{padding-bottom:130px}
+  .keypad{
+    left:50%;
+    right:auto;
+    bottom:18px;
+    width:min(900px,calc(100vw - 36px));
+    transform:translateX(-50%);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    box-shadow:var(--shadow);
+  }
+  .keypad-inner{max-width:none;grid-template-columns:repeat(12,1fr);gap:6px}
+  .key{font-size:20px;padding:10px 6px;border-radius:8px}
+}
+@media(max-width:420px){
+  .grid,.stats,.daily-stats,.tabs,.mission-road{grid-template-columns:1fr}
+  .achievement-list{grid-template-columns:repeat(2,1fr)}
+  .question{font-size:52px}
+}
+</style>
+</head>
 <body>
 <main class="app">
-<header><div class="brand"><h1 data-i18n="title">乘法速记训练器</h1><p data-i18n="subtitle">多人练习版：10题快速、45题标准、60秒挑战，本机先保存，数据库后台同步。</p></div><div><button type="button" id="langBtn">English</button><div id="statusPill" class="pill">访客模式</div></div></header>
-<section class="card"><div class="auth-row"><div><div class="label" data-i18n="loginStatus">登录状态</div><div id="authText" style="font-weight:950"></div><p id="authNote" class="small"></p></div><button type="button" id="loginBtn" class="primary">Google 登录</button><button type="button" id="logoutBtn" class="danger hidden">退出登录</button><a href="./admin.html" style="font-weight:850" data-i18n="admin">后台管理</a></div></section>
-<section class="card"><h2 data-i18n="profile">个人信息</h2><div class="profile-grid"><div><div class="label" data-i18n="currentIdentity">当前身份</div><div id="currentIdentity" style="font-size:20px;font-weight:950"></div></div><div><div class="label" data-i18n="displayName">显示用户名</div><input id="displayNameInput" maxlength="20"></div><button type="button" id="saveNameBtn" class="primary" data-i18n="saveName">保存用户名</button></div><p id="profileNote" class="small"></p><p id="deviceInfo" class="small"></p></section>
-<section id="guestUserCard" class="card"><h2 data-i18n="guestUser">访客用户</h2><div class="user-grid"><div><div class="label" data-i18n="currentUser">当前用户</div><select id="userSelect"></select></div><div><div class="label" data-i18n="newUser">新增用户</div><input id="newUserName" maxlength="16" placeholder="LEO"></div><button type="button" id="addUserBtn" class="primary" data-i18n="addUser">添加用户</button></div><p class="small" data-i18n="guestNote">默认用户：JUNJUN、ROUROU。可继续添加其他用户。</p></section>
-<section class="card"><h2 data-i18n="practiceMode">练习模式</h2><div class="grid"><button type="button" id="sessionQuick" class="active"></button><button type="button" id="sessionStandard"></button><button type="button" id="sessionChallenge"></button><button type="button" id="sessionMistakeReview"></button></div><p class="small" data-i18n="sessionNote">快速练习更容易生成历史和排行榜；60秒挑战到时间自动结算。</p></section>
-<section class="card"><h2 data-i18n="questionType">题目类型</h2><div class="grid"><button type="button" id="modeTwoDigit" class="active"></button><button type="button" id="modeTable"></button><button type="button" id="modeHard"></button><button type="button" id="modeMistakes"></button></div><p class="small" data-i18n="inputNote">统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。</p></section>
-<section class="card stats"><div class="stat"><div class="label" data-i18n="questions">题目</div><div id="statCount" class="value">0/10</div></div><div class="stat"><div class="label" data-i18n="correct">正确</div><div id="statCorrect" class="value">0</div></div><div class="stat"><div class="label" data-i18n="accuracy">正确率</div><div id="statAccuracy" class="value">0%</div></div><div class="stat"><div class="label" data-i18n="avg">平均用时</div><div id="statAvg" class="value">0s</div></div></section>
-<section class="card question-card"><div class="progress-line"><span id="progressText"></span><div class="bar"><div id="barFill"></div></div><span id="timerText">00:00</span></div><div id="question" class="question">Ready?</div><div id="answerDisplay" class="answer-display"> </div><div id="feedback" class="feedback"></div><div class="grid" style="margin-top:14px;grid-template-columns:repeat(3,1fr)"><button type="button" id="newSetBtn" class="primary" data-i18n="newTest">开始新测试</button><button type="button" id="showAnswerBtn" class="warn" data-i18n="showAnswer">显示答案</button><button type="button" id="clearBtn" class="danger" data-i18n="clearMistakes">清空当前用户错题</button></div></section>
-<section id="summary" class="card summary"><h2 data-i18n="summary">本轮结果</h2><p id="summaryText" style="font-size:18px;font-weight:850"></p><div id="mistakeList" class="list"></div></section>
-<section class="card"><div class="tabs"><button type="button" id="tabHistory" class="active" data-i18n="history">测试历史</button><button type="button" id="tabLeaderboard" data-i18n="leaderboard">排行榜</button><button type="button" id="tabMistakes" data-i18n="mistakes">错题库</button></div><div id="panelHistory" class="panel show"><div class="table-wrap"><table><thead><tr><th data-i18n="time">时间</th><th data-i18n="user">用户</th><th data-i18n="session">练习</th><th data-i18n="mode">模式</th><th data-i18n="score">得分</th><th data-i18n="accuracy">正确率</th><th data-i18n="seconds">用时</th><th data-i18n="avg">平均</th></tr></thead><tbody id="historyBody"></tbody></table></div></div><div id="panelLeaderboard" class="panel"><div class="table-wrap"><table><thead><tr><th>Rank</th><th data-i18n="user">用户</th><th data-i18n="session">练习</th><th data-i18n="mode">模式</th><th data-i18n="score">得分</th><th data-i18n="accuracy">正确率</th><th data-i18n="seconds">用时</th><th data-i18n="avg">平均</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div><div id="panelMistakes" class="panel"><p id="mistakeOwner" class="small" style="font-weight:850"></p><div id="mistakeBank" class="list"></div></div></section>
+  <header>
+    <div class="brand">
+      <h1 data-i18n="title">乘法速记训练器</h1>
+      <p data-i18n="subtitle">每日闯关、错题复习、连续打卡和等级成长，本机保存，云端后台同步。</p>
+    </div>
+    <div>
+      <button type="button" id="langBtn">English</button>
+      <div id="statusPill" class="pill">访客模式</div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="auth-row">
+      <div>
+        <div class="label" data-i18n="loginStatus">登录状态</div>
+        <div id="authText" style="font-weight:950"></div>
+        <p id="authNote" class="small"></p>
+      </div>
+      <button type="button" id="loginBtn" class="primary">Google 登录</button>
+      <button type="button" id="logoutBtn" class="danger hidden">退出登录</button>
+      <a href="./admin.html" style="font-weight:850" data-i18n="admin">后台管理</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="profile">个人信息</h2>
+    <div class="profile-grid">
+      <div>
+        <div class="label" data-i18n="currentIdentity">当前身份</div>
+        <div id="currentIdentity" style="font-size:20px;font-weight:950"></div>
+      </div>
+      <div>
+        <div class="label" data-i18n="displayName">显示用户名</div>
+        <input id="displayNameInput" maxlength="20">
+      </div>
+      <button type="button" id="saveNameBtn" class="primary" data-i18n="saveName">保存用户名</button>
+    </div>
+    <p id="profileNote" class="small"></p>
+    <p id="deviceInfo" class="small"></p>
+  </section>
+
+  <section id="guestUserCard" class="card">
+    <h2 data-i18n="guestUser">访客用户</h2>
+    <div class="user-grid">
+      <div>
+        <div class="label" data-i18n="currentUser">当前用户</div>
+        <select id="userSelect"></select>
+      </div>
+      <div>
+        <div class="label" data-i18n="newUser">新增用户</div>
+        <input id="newUserName" maxlength="16" placeholder="LEO">
+      </div>
+      <button type="button" id="addUserBtn" class="primary" data-i18n="addUser">添加用户</button>
+    </div>
+    <p class="small" data-i18n="guestNote">默认用户：JUNJUN、ROUROU。可继续添加其他用户。</p>
+  </section>
+
+  <section class="card daily-card">
+    <div class="section-head">
+      <div>
+        <div class="label" data-i18n="todayChallenge">今日闯关</div>
+        <h2 id="dailyTitle">今日闯关</h2>
+        <p id="dailySubtitle" class="small"></p>
+      </div>
+      <button type="button" id="checkinBtn" class="primary" data-i18n="checkin">完成今日打卡</button>
+    </div>
+    <div class="daily-stats">
+      <div class="stat"><div class="label" data-i18n="streak">连续打卡</div><div id="statStreak" class="value">0</div></div>
+      <div class="stat"><div class="label" data-i18n="bestStreak">最佳连续</div><div id="statBestStreak" class="value">0</div></div>
+      <div class="stat"><div class="label" data-i18n="level">等级</div><div id="statLevel" class="value">Lv.1</div></div>
+      <div class="stat"><div class="label" data-i18n="xp">成长值</div><div id="statXp" class="value">0</div></div>
+    </div>
+    <div class="progress-line daily-progress">
+      <span id="dailyProgressText"></span>
+      <div class="bar"><div id="dailyProgressFill"></div></div>
+      <span id="dailyXpText"></span>
+    </div>
+    <div class="daily-insight">
+      <div class="advice-box">
+        <strong data-i18n="todayAdvice">今日建议</strong>
+        <div id="dailyAdvice" class="advice-text"></div>
+      </div>
+      <div class="week-box">
+        <strong data-i18n="weekMap">7天打卡图</strong>
+        <div id="weekMap" class="week-map"></div>
+      </div>
+    </div>
+    <div id="missionRoad" class="mission-road"></div>
+    <div class="badge-box">
+      <strong data-i18n="badges">成长徽章</strong>
+      <div id="achievementList" class="achievement-list"></div>
+    </div>
+    <div id="levelTrack" class="level-track"></div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="practiceMode">练习模式</h2>
+    <div class="grid">
+      <button type="button" id="sessionQuick" class="active"></button>
+      <button type="button" id="sessionStandard"></button>
+      <button type="button" id="sessionChallenge"></button>
+      <button type="button" id="sessionMistakeReview"></button>
+    </div>
+    <p class="small" data-i18n="sessionNote">快速练习积累手感，标准练习冲关，60秒挑战练速度。</p>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="questionType">题目类型</h2>
+    <div class="grid">
+      <button type="button" id="modeTwoDigit" class="active"></button>
+      <button type="button" id="modeTable"></button>
+      <button type="button" id="modeHard"></button>
+      <button type="button" id="modeMistakes"></button>
+    </div>
+    <p class="small" data-i18n="inputNote">统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。</p>
+  </section>
+
+  <section class="card stats">
+    <div class="stat"><div class="label" data-i18n="questions">题目</div><div id="statCount" class="value">0/10</div></div>
+    <div class="stat"><div class="label" data-i18n="correct">正确</div><div id="statCorrect" class="value">0</div></div>
+    <div class="stat"><div class="label" data-i18n="accuracy">正确率</div><div id="statAccuracy" class="value">0%</div></div>
+    <div class="stat"><div class="label" data-i18n="avg">平均用时</div><div id="statAvg" class="value">0s</div></div>
+  </section>
+
+  <section class="card question-card">
+    <div class="progress-line">
+      <span id="progressText"></span>
+      <div class="bar"><div id="barFill"></div></div>
+      <span id="timerText">00:00</span>
+    </div>
+    <div id="question" class="question">Ready?</div>
+    <div id="answerDisplay" class="answer-display"> </div>
+    <div id="feedback" class="feedback"></div>
+    <div class="grid" style="margin-top:14px;grid-template-columns:repeat(3,1fr)">
+      <button type="button" id="newSetBtn" class="primary" data-i18n="newTest">开始新测试</button>
+      <button type="button" id="showAnswerBtn" class="warn" data-i18n="showAnswer">显示答案</button>
+      <button type="button" id="clearBtn" class="danger" data-i18n="clearMistakes">清空当前用户错题</button>
+    </div>
+  </section>
+
+  <section id="summary" class="card summary">
+    <h2 data-i18n="summary">本轮结果</h2>
+    <p id="summaryText" style="font-size:18px;font-weight:850"></p>
+    <div id="mistakeList" class="list"></div>
+  </section>
+
+  <section class="card">
+    <div class="tabs">
+      <button type="button" id="tabHistory" class="active" data-i18n="history">测试历史</button>
+      <button type="button" id="tabLeaderboard" data-i18n="leaderboard">排行榜</button>
+      <button type="button" id="tabMistakes" data-i18n="mistakes">错题库</button>
+    </div>
+    <div id="panelHistory" class="panel show">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="time">时间</th>
+              <th data-i18n="user">用户</th>
+              <th data-i18n="session">练习</th>
+              <th data-i18n="mode">模式</th>
+              <th data-i18n="score">得分</th>
+              <th data-i18n="accuracy">正确率</th>
+              <th data-i18n="seconds">用时</th>
+              <th data-i18n="avg">平均</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="panelLeaderboard" class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th data-i18n="user">用户</th>
+              <th data-i18n="session">练习</th>
+              <th data-i18n="mode">模式</th>
+              <th data-i18n="score">得分</th>
+              <th data-i18n="accuracy">正确率</th>
+              <th data-i18n="seconds">用时</th>
+              <th data-i18n="avg">平均</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="panelMistakes" class="panel">
+      <p id="mistakeOwner" class="small" style="font-weight:850"></p>
+      <div id="mistakeBank" class="list"></div>
+    </div>
+  </section>
 </main>
-<nav class="keypad"><div class="keypad-inner"><button type="button" class="key" data-key="7">7</button><button type="button" class="key" data-key="8">8</button><button type="button" class="key" data-key="9">9</button><button type="button" class="key" data-key="4">4</button><button type="button" class="key" data-key="5">5</button><button type="button" class="key" data-key="6">6</button><button type="button" class="key" data-key="1">1</button><button type="button" class="key" data-key="2">2</button><button type="button" class="key" data-key="3">3</button><button type="button" class="key" data-key="0">0</button><button type="button" class="key delete" data-key="delete">⌫</button><button type="button" id="okBtn" class="key confirm" data-key="confirm">OK</button></div></nav>
+
+<nav class="keypad">
+  <div class="keypad-inner">
+    <button type="button" class="key" data-key="7">7</button>
+    <button type="button" class="key" data-key="8">8</button>
+    <button type="button" class="key" data-key="9">9</button>
+    <button type="button" class="key" data-key="4">4</button>
+    <button type="button" class="key" data-key="5">5</button>
+    <button type="button" class="key" data-key="6">6</button>
+    <button type="button" class="key" data-key="1">1</button>
+    <button type="button" class="key" data-key="2">2</button>
+    <button type="button" class="key" data-key="3">3</button>
+    <button type="button" class="key" data-key="0">0</button>
+    <button type="button" class="key delete" data-key="delete">⌫</button>
+    <button type="button" id="okBtn" class="key confirm" data-key="confirm">OK</button>
+  </div>
+</nav>
+
 <script>
-const SUPABASE_URL='https://ycjuceortcduakxscfes.supabase.co', SUPABASE_ANON_KEY='sb_publishable_sK-XWyiFwSoKCorddBULCw_0yiS9e5t';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const SUPABASE_URL='https://ycjuceortcduakxscfes.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_sK-XWyiFwSoKCorddBULCw_0yiS9e5t';
+const sb=window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
 const APP_KEY='multiplication-trainer-v9';
-const I={zh:{title:'乘法速记训练器',subtitle:'多人练习版：10题快速、45题标准、60秒挑战，本机先保存，数据库后台同步。',loginStatus:'登录状态',admin:'后台管理',profile:'个人信息',currentIdentity:'当前身份',displayName:'显示用户名',saveName:'保存用户名',guestUser:'访客用户',currentUser:'当前用户',newUser:'新增用户',addUser:'添加用户',guestNote:'默认用户：JUNJUN、ROUROU。可继续添加其他用户。',practiceMode:'练习模式',quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习',sessionNote:'快速练习更容易生成历史和排行榜；60秒挑战到时间自动结算。',questionType:'题目类型',inputNote:'统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。',questions:'题目',correct:'正确',accuracy:'正确率',avg:'平均用时',newTest:'开始新测试',showAnswer:'显示答案',clearMistakes:'清空当前用户错题',summary:'本轮结果',history:'测试历史',leaderboard:'排行榜',mistakes:'错题库',time:'时间',user:'用户',session:'练习',mode:'模式',score:'得分',seconds:'用时',guestMode:'访客模式',cloudMode:'Google 云端模式',notLogged:'未登录：使用本机用户',login:'Google 登录',logout:'退出登录',savedLocal:'本机已保存；数据库后台同步。',savedCloud:'Google 已登录；数据库后台同步。',noHistory:'当前用户还没有测试历史。',noMistakes:'当前用户暂无错题 ✅',continue:'继续，加油！',done:'完成！',enter:'输入答案后点确认。',inputFirst:'先输入答案哦。'},en:{title:'Multiplication Fluency Trainer',subtitle:'10-question quick, 45-question standard, 60-second challenge. Local-first, database-synced.',loginStatus:'Login status',admin:'Admin',profile:'Profile',currentIdentity:'Current identity',displayName:'Display name',saveName:'Save name',guestUser:'Guest users',currentUser:'Current user',newUser:'New user',addUser:'Add user',guestNote:'Default users: JUNJUN and ROUROU. You can add more users.',practiceMode:'Practice mode',quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review',sessionNote:'Quick practice creates history and leaderboard faster. 60s challenge ends automatically.',questionType:'Question type',inputNote:'Large number buttons. MacBook number keys, Enter and Backspace also work.',questions:'Questions',correct:'Correct',accuracy:'Accuracy',avg:'Avg time',newTest:'New test',showAnswer:'Show answer',clearMistakes:'Clear current mistakes',summary:'Result',history:'History',leaderboard:'Leaderboard',mistakes:'Mistakes',time:'Time',user:'User',session:'Practice',mode:'Mode',score:'Score',seconds:'Seconds',guestMode:'Guest mode',cloudMode:'Google cloud mode',notLogged:'Not signed in: local users',login:'Google sign in',logout:'Sign out',savedLocal:'Saved locally; syncing in background.',savedCloud:'Google signed in; syncing in background.',noHistory:'No history for current user.',noMistakes:'No mistakes for current user ✅',continue:'Keep going!',done:'Done!',enter:'Enter answer and tap OK.',inputFirst:'Enter an answer first.'}};
-const modeNames={zh:{twoDigit:'两位数专项',table:'99乘法表',hard:'难点专项',mistakes:'只练错题'},en:{twoDigit:'Two-digit',table:'9×9 table',hard:'Hard facts',mistakes:'Mistakes only'}};
-const sessionNames={zh:{quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习'},en:{quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review'}};
+const I={
+  zh:{
+    title:'乘法速记训练器',
+    subtitle:'每日闯关、错题复习、连续打卡和等级成长，本机保存，云端后台同步。',
+    loginStatus:'登录状态',admin:'后台管理',profile:'个人信息',currentIdentity:'当前身份',displayName:'显示用户名',saveName:'保存用户名',
+    guestUser:'访客用户',currentUser:'当前用户',newUser:'新增用户',addUser:'添加用户',guestNote:'默认用户：JUNJUN、ROUROU。可继续添加其他用户。',
+    todayChallenge:'今日闯关',checkin:'完成今日打卡',checkedIn:'今日已打卡',streak:'连续打卡',bestStreak:'最佳连续',level:'等级',xp:'成长值',
+    todayAdvice:'今日建议',weekMap:'7天打卡图',badges:'成长徽章',unlocked:'已获得',locked:'待解锁',
+    practiceMode:'练习模式',quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习',
+    sessionNote:'快速练习积累手感，标准练习冲关，60秒挑战练速度。',
+    questionType:'题目类型',inputNote:'统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。',
+    questions:'题目',correct:'正确',accuracy:'正确率',avg:'平均用时',newTest:'开始新测试',showAnswer:'显示答案',clearMistakes:'清空当前用户错题',
+    summary:'本轮结果',history:'测试历史',leaderboard:'排行榜',mistakes:'错题库',time:'时间',user:'用户',session:'练习',mode:'模式',score:'得分',seconds:'用时',
+    guestMode:'访客模式',cloudMode:'Google 云端模式',notLogged:'未登录：使用本机用户',login:'Google 登录',logout:'退出登录',
+    savedLocal:'本机已保存；云端可用时后台同步。',savedCloud:'Google 已登录；数据库后台同步。',localOnly:'本机模式：云端组件暂不可用。',
+    noHistory:'当前用户还没有测试历史。',noMistakes:'当前用户暂无错题',continue:'继续，加油！',done:'完成！',enter:'输入答案后点确认。',inputFirst:'先输入答案哦。',
+    start:'开始',again:'再练一次',missionDone:'已完成',dailyProgress:'今日进度',target:'目标',nextLevel:'下一等级',maxLevel:'已达最高等级',
+    checkinNeed:'还差任务数：',checkinDone:'今天已经打卡。',todayComplete:'今日打卡完成',readyCheckin:'可以打卡了',gainedXp:'获得成长值'
+  },
+  en:{
+    title:'Multiplication Fluency Trainer',
+    subtitle:'Daily quests, mistake review, streak check-ins, and level growth. Local-first, database-synced.',
+    loginStatus:'Login status',admin:'Admin',profile:'Profile',currentIdentity:'Current identity',displayName:'Display name',saveName:'Save name',
+    guestUser:'Guest users',currentUser:'Current user',newUser:'New user',addUser:'Add user',guestNote:'Default users: JUNJUN and ROUROU. You can add more users.',
+    todayChallenge:'Daily Quest',checkin:'Check in today',checkedIn:'Checked in',streak:'Streak',bestStreak:'Best streak',level:'Level',xp:'XP',
+    todayAdvice:'Today\'s focus',weekMap:'7-day map',badges:'Growth badges',unlocked:'Unlocked',locked:'Locked',
+    practiceMode:'Practice mode',quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review',
+    sessionNote:'Quick builds rhythm, standard clears checkpoints, 60s challenge trains speed.',
+    questionType:'Question type',inputNote:'Large number buttons. MacBook number keys, Enter and Backspace also work.',
+    questions:'Questions',correct:'Correct',accuracy:'Accuracy',avg:'Avg time',newTest:'New test',showAnswer:'Show answer',clearMistakes:'Clear current mistakes',
+    summary:'Result',history:'History',leaderboard:'Leaderboard',mistakes:'Mistakes',time:'Time',user:'User',session:'Practice',mode:'Mode',score:'Score',seconds:'Seconds',
+    guestMode:'Guest mode',cloudMode:'Google cloud mode',notLogged:'Not signed in: local users',login:'Google sign in',logout:'Sign out',
+    savedLocal:'Saved locally; syncs when cloud is available.',savedCloud:'Google signed in; syncing in background.',localOnly:'Local mode: cloud component unavailable.',
+    noHistory:'No history for current user.',noMistakes:'No mistakes for current user',continue:'Keep going!',done:'Done!',enter:'Enter answer and tap OK.',inputFirst:'Enter an answer first.',
+    start:'Start',again:'Again',missionDone:'Done',dailyProgress:'Daily progress',target:'Target',nextLevel:'Next level',maxLevel:'Max level reached',
+    checkinNeed:'Missions left: ',checkinDone:'Already checked in today.',todayComplete:'Daily check-in complete',readyCheckin:'Ready to check in',gainedXp:'XP gained'
+  }
+};
+const modeNames={
+  zh:{twoDigit:'两位数专项',table:'99乘法表',hard:'难点专项',mistakes:'只练错题'},
+  en:{twoDigit:'Two-digit',table:'9×9 table',hard:'Hard facts',mistakes:'Mistakes only'}
+};
+const sessionNames={
+  zh:{quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习'},
+  en:{quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review'}
+};
+const missionText={
+  zh:{
+    warmup:{title:'热身关',meta:'完成一次10题快速'},
+    precision:{title:'精准关',meta:'任意一轮正确率达到85%'},
+    speed:{title:'速度关',meta:'60秒挑战答对15题'},
+    review:{title:'修正关',meta:'错题复习或45题标准'}
+  },
+  en:{
+    warmup:{title:'Warm-up',meta:'Finish one 10Q quick set'},
+    precision:{title:'Precision',meta:'Reach 85% accuracy in any set'},
+    speed:{title:'Speed',meta:'Get 15 correct in 60 seconds'},
+    review:{title:'Repair',meta:'Mistake review or 45Q standard'}
+  }
+};
+const adviceText={
+  zh:{
+    warmup:'先完成10题快速热身，把手感叫醒。',
+    precision:'下一关冲85%正确率，稳住比快更重要。',
+    speed:'今天可以试一次60秒挑战，把反应速度拉起来。',
+    review:'把错题或45题标准补上，今天的闯关就更完整。',
+    checkin:'任务达标了，点一下完成今日打卡。',
+    done:'今天已经打卡，想加练就做一组错题复习。',
+    free:'从热身关开始，完成2个任务就能打卡。'
+  },
+  en:{
+    warmup:'Start with a 10Q quick warm-up and wake up the rhythm.',
+    precision:'Next, reach 85% accuracy. Stable first, fast second.',
+    speed:'Try one 60s challenge today and raise reaction speed.',
+    review:'Finish mistake review or a 45Q standard set to round out the day.',
+    checkin:'Daily target reached. Tap check-in to lock it in.',
+    done:'Checked in already. A mistake review set is a good extra rep.',
+    free:'Start with warm-up. Finish 2 missions to check in.'
+  }
+};
+const achievementText={
+  zh:[
+    {id:'firstCheckin',title:'第一枚打卡',meta:'完成1天打卡',icon:'✓'},
+    {id:'streak3',title:'三日连胜',meta:'连续打卡3天',icon:'3'},
+    {id:'accuracy90',title:'精准高手',meta:'单日正确率90%+',icon:'90'},
+    {id:'speed15',title:'速度突破',meta:'60秒答对15题',icon:'15'},
+    {id:'xp500',title:'成长500',meta:'累计500 XP',icon:'XP'}
+  ],
+  en:[
+    {id:'firstCheckin',title:'First Check-in',meta:'Check in 1 day',icon:'✓'},
+    {id:'streak3',title:'3-Day Run',meta:'3-day streak',icon:'3'},
+    {id:'accuracy90',title:'Precision',meta:'90%+ day accuracy',icon:'90'},
+    {id:'speed15',title:'Speed Break',meta:'15 correct in 60s',icon:'15'},
+    {id:'xp500',title:'500 XP',meta:'Earn 500 XP total',icon:'XP'}
+  ]
+};
+const levelNames={
+  zh:{starter:'起步',steady:'稳定',sharp:'进阶',expert:'高手',master:'闯关王',legend:'自律王'},
+  en:{starter:'Starter',steady:'Steady',sharp:'Sharp',expert:'Expert',master:'Master',legend:'Legend'}
+};
+const LEVELS=[
+  {level:1,key:'starter',xp:0},
+  {level:2,key:'steady',xp:120},
+  {level:3,key:'sharp',xp:320},
+  {level:4,key:'expert',xp:650},
+  {level:5,key:'master',xp:1100},
+  {level:6,key:'legend',xp:1800}
+];
 const defaultUsers=[{id:'u_junjun',name:'JUNJUN'},{id:'u_rourou',name:'ROUROU'}];
-let locale=localStorage.getItem('math_locale')||'zh', googleUser=null, device=null;
+let locale=localStorage.getItem('math_locale')||'zh';
+let googleUser=null;
+let device=null;
 const state={factMode:'twoDigit',sessionMode:'quick',questions:[],index:0,input:'',correct:0,answers:[],startedAt:0,currentStartedAt:0,timer:null,finished:false,currentUserId:null,submitting:false};
-const $=id=>document.getElementById(id); const E={statusPill:$('statusPill'),authText:$('authText'),authNote:$('authNote'),loginBtn:$('loginBtn'),logoutBtn:$('logoutBtn'),guestUserCard:$('guestUserCard'),currentIdentity:$('currentIdentity'),displayNameInput:$('displayNameInput'),profileNote:$('profileNote'),deviceInfo:$('deviceInfo'),userSelect:$('userSelect'),question:$('question'),answerDisplay:$('answerDisplay'),feedback:$('feedback'),statCount:$('statCount'),statCorrect:$('statCorrect'),statAccuracy:$('statAccuracy'),statAvg:$('statAvg'),progressText:$('progressText'),timerText:$('timerText'),barFill:$('barFill'),summary:$('summary'),summaryText:$('summaryText'),mistakeList:$('mistakeList'),historyBody:$('historyBody'),leaderboardBody:$('leaderboardBody'),mistakeBank:$('mistakeBank'),mistakeOwner:$('mistakeOwner')};
-function tr(k){return I[locale][k]||k} function targetTotal(){return state.sessionMode==='standard'?45:state.sessionMode==='challenge'?999:10} function isChallenge(){return state.sessionMode==='challenge'}
-function defaultData(){return{currentUserId:'u_junjun',users:[...defaultUsers],histories:[],mistakesByUser:{u_junjun:{},u_rourou:{}}}}
-function normalize(d){if(!d||!Array.isArray(d.users))d=defaultData();d.histories=d.histories||[];d.mistakesByUser=d.mistakesByUser||{};defaultUsers.forEach(u=>{if(!d.users.some(x=>x.id===u.id))d.users.push(u);if(!d.mistakesByUser[u.id])d.mistakesByUser[u.id]={}});if(!d.currentUserId||!d.users.some(u=>u.id===d.currentUserId))d.currentUserId='u_junjun';return d}
-function loadLocal(){try{return normalize(JSON.parse(localStorage.getItem(APP_KEY)))}catch{return defaultData()}} function saveLocal(d){localStorage.setItem(APP_KEY,JSON.stringify(normalize(d)))}
-function activeUserId(){return googleUser?googleUser.id:(state.currentUserId||loadLocal().currentUserId)} function activeUserName(){if(googleUser)return googleUser.user_metadata?.full_name||googleUser.email;let d=loadLocal();return d.users.find(u=>u.id===activeUserId())?.name||'User'}
-function getMistakes(){let d=loadLocal();return d.mistakesByUser[activeUserId()]||{}} function setMistakes(m){let d=loadLocal();d.mistakesByUser[activeUserId()]=m;saveLocal(d)}
-function applyLang(){document.documentElement.lang=locale==='zh'?'zh-CN':'en';document.querySelectorAll('[data-i18n]').forEach(x=>x.textContent=tr(x.dataset.i18n));$('langBtn').textContent=locale==='zh'?'English':'中文';E.loginBtn.textContent=tr('login');E.logoutBtn.textContent=tr('logout');$('modeTwoDigit').textContent=modeNames[locale].twoDigit;$('modeTable').textContent=modeNames[locale].table;$('modeHard').textContent=modeNames[locale].hard;$('modeMistakes').textContent=modeNames[locale].mistakes;$('sessionQuick').textContent=sessionNames[locale].quick;$('sessionStandard').textContent=sessionNames[locale].standard;$('sessionChallenge').textContent=sessionNames[locale].challenge;$('sessionMistakeReview').textContent=sessionNames[locale].mistakeReview;renderAuth();renderQuestion();renderRecords()}
-function renderAuth(){E.statusPill.textContent=googleUser?tr('cloudMode'):tr('guestMode');E.authText.textContent=googleUser?`${tr('loginStatus')}: ${activeUserName()}`:tr('notLogged');E.authNote.textContent=googleUser?tr('savedCloud'):tr('savedLocal');E.loginBtn.classList.toggle('hidden',!!googleUser);E.logoutBtn.classList.toggle('hidden',!googleUser);E.guestUserCard.classList.toggle('hidden',!!googleUser)}
-function renderUsers(){let d=loadLocal();state.currentUserId=d.currentUserId;E.userSelect.innerHTML=d.users.map(u=>`<option value="${u.id}" ${u.id===d.currentUserId?'selected':''}>${u.name}</option>`).join('')} function renderProfile(){E.currentIdentity.textContent=activeUserName();E.displayNameInput.value=activeUserName();E.profileNote.textContent=googleUser?tr('savedCloud'):tr('savedLocal')}
-async function fingerprint(){try{let raw=[navigator.userAgent,navigator.language,navigator.platform,screen.width,screen.height,Intl.DateTimeFormat().resolvedOptions().timeZone].join('|');let buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32)}catch{return 'fp_'+Date.now()}}
-async function registerDevice(){try{let fp=await fingerprint();let payload={device_fingerprint:fp,user_id:googleUser?.id||null,guest_user_id:googleUser?null:activeUserId(),guest_user_name:googleUser?null:activeUserName(),user_agent:navigator.userAgent,language:navigator.language,platform:navigator.platform,screen_width:screen.width,screen_height:screen.height,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,last_seen_at:new Date().toISOString()};let {data}=await sb.from('math_devices').upsert(payload,{onConflict:'device_fingerprint'}).select().single();device=data||null;E.deviceInfo.textContent=`Device: ${fp} · ${payload.screen_width}×${payload.screen_height}`;localStorage.setItem('math_last_guest_user_id',activeUserId());localStorage.setItem('math_last_guest_user_name',activeUserName())}catch(e){console.warn(e)}}
-async function initAuth(){saveLocal(loadLocal());renderUsers();renderProfile();applyLang();startNewSet();registerDevice();let {data:{session}}=await sb.auth.getSession();googleUser=session?.user||null;if(googleUser)await upsertProfile().catch(console.warn);renderAuth();renderProfile();renderRecords();sb.auth.onAuthStateChange(async(_,s)=>{googleUser=s?.user||null;if(googleUser)await upsertProfile().catch(console.warn);renderAuth();renderProfile();renderRecords();startNewSet();registerDevice()})}
-async function upsertProfile(){let m=googleUser.user_metadata||{};await sb.from('profiles').upsert({id:googleUser.id,email:googleUser.email,display_name:m.full_name||m.name||googleUser.email,avatar_url:m.avatar_url||m.picture||null,locale},{onConflict:'id'})}
-async function login(){await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}})} async function logout(){await sb.auth.signOut();googleUser=null;renderAuth();startNewSet()}
-async function saveName(){let name=E.displayNameInput.value.trim();if(!name)return;if(googleUser){googleUser.user_metadata.full_name=name;sb.from('profiles').upsert({id:googleUser.id,email:googleUser.email,display_name:name,locale},{onConflict:'id'}).then(()=>{}).catch(console.warn)}else{let d=loadLocal();let u=d.users.find(x=>x.id===activeUserId());if(u)u.name=name;saveLocal(d)}renderUsers();renderProfile();renderRecords();startNewSet();registerDevice()}
-function addUser(){let name=$('newUserName').value.trim();if(!name)return;let d=loadLocal();let u=d.users.find(x=>x.name.toLowerCase()===name.toLowerCase());if(u)d.currentUserId=u.id;else{let id='u_'+Date.now();d.users.push({id,name});d.mistakesByUser[id]={};d.currentUserId=id}saveLocal(d);$('newUserName').value='';renderUsers();renderProfile();renderRecords();startNewSet();registerDevice()}
-function switchUser(id){let d=loadLocal();d.currentUserId=id;saveLocal(d);state.currentUserId=id;renderProfile();renderRecords();startNewSet();registerDevice()}
-function q(a,b){return{a,b,answer:a*b}} function r(min,max){return Math.floor(Math.random()*(max-min+1))+min} function keyOf(x){return `${x.a}×${x.b}`}
-function poolTwo(){let p=[];for(let a=2;a<=49;a++)for(let b=2;b<=9;b++){let ans=a*b;if(ans>=10&&ans<=99)p.push(q(a,b))}return p} function poolTable(){let p=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)p.push(q(a,b));return p}
-const hard=[[6,7],[7,6],[6,8],[8,6],[7,8],[8,7],[7,9],[9,7],[8,9],[9,8],[6,6],[7,7],[8,8],[9,9],[4,8],[8,4],[3,9],[9,3]];function poolHard(){let p=hard.map(x=>q(x[0],x[1]));for(let a=11;a<=24;a++)for(let b=3;b<=8;b++){let ans=a*b;if(ans<=99)p.push(q(a,b))}return p} function poolMistakes(){let vals=Object.values(getMistakes());if(!vals.length)return poolTwo();let w=[];vals.forEach(m=>{for(let i=0;i<Math.min(9,2+(m.wrong||1)+(m.slow||0));i++)w.push(q(m.a,m.b))});return w}
-function generate(){let fm=state.sessionMode==='mistakeReview'?'mistakes':state.factMode;let pool=fm==='table'?poolTable():fm==='hard'?poolHard():fm==='mistakes'?poolMistakes():poolTwo();let w=[...pool];if(fm!=='mistakes')Object.values(getMistakes()).forEach(m=>{for(let i=0;i<Math.min(6,1+(m.wrong||1));i++)w.push(q(m.a,m.b))});let out=[],need=targetTotal();while(out.length<need){let one=w[r(0,w.length-1)];if(!out.slice(-6).some(x=>x.a===one.a&&x.b===one.b))out.push({...one})}return out}
-function setFactMode(m){state.factMode=m;['TwoDigit','Table','Hard','Mistakes'].forEach(x=>$('mode'+x).classList.remove('active'));$({twoDigit:'modeTwoDigit',table:'modeTable',hard:'modeHard',mistakes:'modeMistakes'}[m]).classList.add('active');startNewSet()}function setSessionMode(m){state.sessionMode=m;if(m==='mistakeReview')state.factMode='mistakes';['Quick','Standard','Challenge','MistakeReview'].forEach(x=>$('session'+x).classList.remove('active'));$({quick:'sessionQuick',standard:'sessionStandard',challenge:'sessionChallenge',mistakeReview:'sessionMistakeReview'}[m]).classList.add('active');startNewSet()}
-function startNewSet(){clearInterval(state.timer);Object.assign(state,{questions:generate(),index:0,input:'',correct:0,answers:[],startedAt:Date.now(),currentStartedAt:Date.now(),finished:false,submitting:false});E.summary.classList.remove('show');E.feedback.className='feedback';E.feedback.textContent=`${activeUserName()}，${tr('enter')}`;state.timer=setInterval(tick,250);renderQuestion();updateStats();renderMistakeBank()}
-function cq(){return state.questions[state.index]} function renderQuestion(){let x=cq();if(!x)return;E.question.textContent=`${x.a} × ${x.b}`;E.answerDisplay.textContent=state.input||' ';let total=isChallenge()?'60s':targetTotal();E.progressText.textContent=`${activeUserName()} · ${state.index+1}/${total}`;E.barFill.style.width=isChallenge()?`${Math.min(100,elapsed()/60*100)}%`:`${state.index/targetTotal()*100}%`}function elapsed(){return Math.floor((Date.now()-state.startedAt)/1000)} function tick(){if(state.finished)return;let sec=elapsed();E.timerText.textContent=isChallenge()?`⏱ ${Math.max(0,60-sec)}s`:`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;if(isChallenge()){E.barFill.style.width=`${Math.min(100,sec/60*100)}%`;if(sec>=60)finishSet()}} function updateStats(){let done=state.answers.length,acc=done?Math.round(state.correct/done*100):0,avg=done?(state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1):'0';E.statCount.textContent=`${done}/${isChallenge()?'60s':targetTotal()}`;E.statCorrect.textContent=state.correct;E.statAccuracy.textContent=acc+'%';E.statAvg.textContent=avg+'s'} function digit(d){if(state.finished)startNewSet();if(state.input.length<3){state.input+=d;E.answerDisplay.textContent=state.input}} function del(){state.input=state.input.slice(0,-1);E.answerDisplay.textContent=state.input||' '}
-function saveMistakeLocal(x,ok,time){let ms={...getMistakes()},k=keyOf(x),slow=time>5000;if(!ms[k])ms[k]={a:x.a,b:x.b,answer:x.answer,wrong:0,slow:0,rightStreak:0,lastTime:0};let it=ms[k];it.lastTime=Date.now();if(ok){it.rightStreak++;if(slow)it.slow++;if(it.rightStreak>=3&&!slow)delete ms[k]}else{it.wrong++;it.rightStreak=0}setMistakes(ms);renderMistakeBank();return ms[k]}
-function syncMistake(x,item){if(!item)return;let payload={device_id:device?.id||null,a:x.a,b:x.b,answer:x.answer,wrong_count:item.wrong||0,slow_count:item.slow||0,right_streak:item.rightStreak||0,is_resolved:false,updated_at:new Date().toISOString()};if(googleUser)Object.assign(payload,{user_id:googleUser.id});else Object.assign(payload,{guest_user_id:activeUserId(),guest_user_name:activeUserName()});sb.from('math_mistake_facts').upsert(payload,{onConflict:googleUser?'user_id,a,b':'guest_user_id,device_id,a,b'}).then(()=>{}).catch(console.warn)}
-function submitAnswer(){if(state.submitting||state.finished)return;let x=cq();if(!x)return;if(!state.input){E.feedback.className='feedback bad';E.feedback.textContent=tr('inputFirst');return}state.submitting=true;let ua=Number(state.input),time=Date.now()-state.currentStartedAt,ok=ua===x.answer;if(ok)state.correct++;let item=saveMistakeLocal(x,ok,time);syncMistake(x,item);state.answers.push({...x,userAnswer:ua,ok,time,userId:activeUserId(),userName:activeUserName(),deviceId:device?.id||null});E.feedback.className=ok?'feedback good':'feedback bad';E.feedback.textContent=ok?`✅ ${x.a}×${x.b}=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;updateStats();setTimeout(()=>{state.submitting=false;state.index++;state.input='';state.currentStartedAt=Date.now();if(!isChallenge()&&state.index>=targetTotal())finishSet();else{E.feedback.className='feedback';E.feedback.textContent=tr('continue');if(!cq())state.questions.push(...generate());renderQuestion()}},ok?260:780)}
-function sessionModeDb(){return `${state.factMode}_${state.sessionMode}`}function saveHistoryLocal(sec){let done=state.answers.length,acc=done?Math.round(state.correct/done*100):0,avg=done?Number((state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1)):0;let d=loadLocal();let row={id:'h_'+Date.now(),userId:activeUserId(),userName:activeUserName(),factMode:state.factMode,sessionMode:state.sessionMode,mode:sessionModeDb(),date:new Date().toISOString(),total:done,correct:state.correct,accuracy:acc,seconds:sec,avg};d.histories.unshift(row);d.histories=d.histories.slice(0,500);saveLocal(d);return row}
-function syncHistory(row){let payload={user_id:googleUser?googleUser.id:null,guest_user_id:googleUser?null:row.userId,guest_user_name:googleUser?null:row.userName,device_id:device?.id||null,mode:row.mode,total_questions:row.total,correct_count:row.correct,accuracy:row.accuracy,total_seconds:row.seconds,avg_seconds:row.avg,wrong_count:state.answers.filter(a=>!a.ok).length,locale,details:state.answers};sb.from('math_test_results').insert(payload).then(()=>{}).catch(console.warn)}
-function finishSet(){if(state.finished)return;state.finished=true;clearInterval(state.timer);let sec=elapsed();E.barFill.style.width='100%';E.question.textContent=tr('done');E.answerDisplay.textContent='🎉';let row=saveHistoryLocal(sec);syncHistory(row);renderSummary(sec);renderRecords()}
-function renderSummary(sec){let done=state.answers.length,acc=done?Math.round(state.correct/done*100):0,avg=done?(state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1):'0';E.summary.classList.add('show');E.summaryText.textContent=`${activeUserName()} · ${sessionNames[locale][state.sessionMode]}: ${state.correct}/${done}, ${acc}%, ${sec}s, ${avg}s/q`;let list=state.answers.filter(a=>!a.ok||a.time>5000).slice(0,24);E.mistakeList.innerHTML=list.length?list.map(x=>`<div class="item">${x.a}×${x.b}=${x.answer}<br><span class="label">${x.ok?'slow':'wrong'}</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`}
-function renderRecords(){renderHistory();renderLeaderboard();renderMistakeBank()} function fmtDate(x){return x?new Date(x).toLocaleString():''} function fmtTime(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}function rowSession(h){return sessionNames[locale][h.sessionMode]||h.sessionMode||''}function rowMode(h){return modeNames[locale][h.factMode]||modeNames[locale][String(h.mode||'').split('_')[0]]||h.mode||''}
-function localRows(){return loadLocal().histories.filter(h=>h.userId===activeUserId())} function renderHistory(){let rows=localRows().slice(0,30);E.historyBody.innerHTML=rows.length?rows.map(h=>`<tr><td>${fmtDate(h.date)}</td><td>${h.userName}</td><td>${rowSession(h)}</td><td>${rowMode(h)}</td><td>${h.correct}/${h.total}</td><td>${h.accuracy}%</td><td>${fmtTime(h.seconds)}</td><td>${h.avg}s</td></tr>`).join(''):`<tr><td colspan="8">${tr('noHistory')}</td></tr>`}
-function renderLeaderboard(){let rows=[...loadLocal().histories].sort((a,b)=>b.accuracy-a.accuracy||b.correct-a.correct||a.seconds-b.seconds).slice(0,20);E.leaderboardBody.innerHTML=rows.length?rows.map((h,i)=>`<tr><td>${i+1}</td><td>${h.userName}</td><td>${rowSession(h)}</td><td>${rowMode(h)}</td><td>${h.correct}/${h.total}</td><td>${h.accuracy}%</td><td>${fmtTime(h.seconds)}</td><td>${h.avg}s</td></tr>`).join(''):'<tr><td colspan="8">-</td></tr>`}
-function renderMistakeBank(){let vals=Object.values(getMistakes()).sort((a,b)=>(b.wrong||0)-(a.wrong||0)||b.lastTime-a.lastTime);E.mistakeOwner.textContent=`${tr('mistakes')}: ${activeUserName()} · ${device?.device_fingerprint||'local'}`;E.mistakeBank.innerHTML=vals.length?vals.map(m=>`<div class="item">${m.a}×${m.b}=${m.answer}<br><span class="label">${m.wrong||0} wrong · ${m.slow||0} slow</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`}
-function showAnswer(){let x=cq();if(!x)return;E.feedback.className='feedback bad';E.feedback.textContent=`${x.a}×${x.b}=${x.answer}`;let item=saveMistakeLocal(x,false,9999);syncMistake(x,item)} function clearMistakes(){setMistakes({});renderMistakeBank()} function showTab(name){['History','Leaderboard','Mistakes'].forEach(x=>{$('tab'+x).classList.remove('active');$('panel'+x).classList.remove('show')});$('tab'+name).classList.add('active');$('panel'+name).classList.add('show')}
-function handleKeyAction(k){if(/^\d$/.test(k))digit(k);else if(k==='delete')del();else if(k==='confirm')submitAnswer()}
-E.loginBtn.onclick=login;E.logoutBtn.onclick=logout;$('langBtn').onclick=()=>{locale=locale==='zh'?'en':'zh';localStorage.setItem('math_locale',locale);applyLang()};$('saveNameBtn').onclick=saveName;$('addUserBtn').onclick=addUser;E.userSelect.onchange=e=>switchUser(e.target.value);$('modeTwoDigit').onclick=()=>setFactMode('twoDigit');$('modeTable').onclick=()=>setFactMode('table');$('modeHard').onclick=()=>setFactMode('hard');$('modeMistakes').onclick=()=>setFactMode('mistakes');$('sessionQuick').onclick=()=>setSessionMode('quick');$('sessionStandard').onclick=()=>setSessionMode('standard');$('sessionChallenge').onclick=()=>setSessionMode('challenge');$('sessionMistakeReview').onclick=()=>setSessionMode('mistakeReview');$('newSetBtn').onclick=startNewSet;$('showAnswerBtn').onclick=showAnswer;$('clearBtn').onclick=clearMistakes;$('tabHistory').onclick=()=>showTab('History');$('tabLeaderboard').onclick=()=>showTab('Leaderboard');$('tabMistakes').onclick=()=>showTab('Mistakes');document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('click',e=>{e.preventDefault();handleKeyAction(b.dataset.key)});b.addEventListener('touchstart',e=>{e.preventDefault();handleKeyAction(b.dataset.key)},{passive:false})});window.addEventListener('keydown',e=>{if(/^\d$/.test(e.key)){e.preventDefault();digit(e.key)}else if(e.key==='Backspace'){e.preventDefault();del()}else if(e.key==='Enter'){e.preventDefault();submitAnswer()}});
+const $=id=>document.getElementById(id);
+const E={
+  statusPill:$('statusPill'),authText:$('authText'),authNote:$('authNote'),loginBtn:$('loginBtn'),logoutBtn:$('logoutBtn'),guestUserCard:$('guestUserCard'),
+  currentIdentity:$('currentIdentity'),displayNameInput:$('displayNameInput'),profileNote:$('profileNote'),deviceInfo:$('deviceInfo'),userSelect:$('userSelect'),
+  dailyTitle:$('dailyTitle'),dailySubtitle:$('dailySubtitle'),checkinBtn:$('checkinBtn'),statStreak:$('statStreak'),statBestStreak:$('statBestStreak'),statLevel:$('statLevel'),statXp:$('statXp'),dailyProgressText:$('dailyProgressText'),dailyProgressFill:$('dailyProgressFill'),dailyXpText:$('dailyXpText'),dailyAdvice:$('dailyAdvice'),weekMap:$('weekMap'),missionRoad:$('missionRoad'),achievementList:$('achievementList'),levelTrack:$('levelTrack'),
+  question:$('question'),answerDisplay:$('answerDisplay'),feedback:$('feedback'),statCount:$('statCount'),statCorrect:$('statCorrect'),statAccuracy:$('statAccuracy'),statAvg:$('statAvg'),progressText:$('progressText'),timerText:$('timerText'),barFill:$('barFill'),
+  summary:$('summary'),summaryText:$('summaryText'),mistakeList:$('mistakeList'),historyBody:$('historyBody'),leaderboardBody:$('leaderboardBody'),mistakeBank:$('mistakeBank'),mistakeOwner:$('mistakeOwner')
+};
+
+function tr(k){return I[locale][k]||k}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function targetTotal(){return state.sessionMode==='standard'?45:state.sessionMode==='challenge'?999:10}
+function isChallenge(){return state.sessionMode==='challenge'}
+function todayKey(offset=0){let d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function defaultProgress(){return{xp:0,streak:0,bestStreak:0,lastCheckinDate:null,dailyByDate:{}}}
+function defaultDay(date=todayKey()){return{date,checkedIn:false,missions:[],sessions:0,total:0,correct:0,seconds:0,xp:0,bestAccuracy:0,challengeCorrect:0}}
+function normalizeProgress(p){
+  p=p&&typeof p==='object'?p:defaultProgress();
+  p.xp=Number(p.xp)||0;
+  p.streak=Number(p.streak)||0;
+  p.bestStreak=Number(p.bestStreak)||0;
+  p.lastCheckinDate=p.lastCheckinDate||null;
+  p.dailyByDate=p.dailyByDate&&typeof p.dailyByDate==='object'?p.dailyByDate:{};
+  Object.keys(p.dailyByDate).forEach(k=>{
+    let day=p.dailyByDate[k]||defaultDay(k);
+    p.dailyByDate[k]={...defaultDay(k),...day,missions:Array.isArray(day.missions)?day.missions:[]};
+  });
+  return p;
+}
+function defaultData(){
+  return{currentUserId:'u_junjun',users:defaultUsers.map(u=>({...u})),histories:[],mistakesByUser:{u_junjun:{},u_rourou:{}},progressByUser:{u_junjun:defaultProgress(),u_rourou:defaultProgress()}}
+}
+function normalize(d){
+  if(!d||!Array.isArray(d.users))d=defaultData();
+  d.histories=Array.isArray(d.histories)?d.histories:[];
+  d.mistakesByUser=d.mistakesByUser&&typeof d.mistakesByUser==='object'?d.mistakesByUser:{};
+  d.progressByUser=d.progressByUser&&typeof d.progressByUser==='object'?d.progressByUser:{};
+  defaultUsers.forEach(u=>{
+    if(!d.users.some(x=>x.id===u.id))d.users.push({...u});
+  });
+  d.users.forEach(u=>{
+    if(!d.mistakesByUser[u.id])d.mistakesByUser[u.id]={};
+    d.progressByUser[u.id]=normalizeProgress(d.progressByUser[u.id]);
+  });
+  Object.keys(d.progressByUser).forEach(id=>{d.progressByUser[id]=normalizeProgress(d.progressByUser[id])});
+  if(!d.currentUserId||!d.users.some(u=>u.id===d.currentUserId))d.currentUserId='u_junjun';
+  return d;
+}
+function loadLocal(){try{return normalize(JSON.parse(localStorage.getItem(APP_KEY)))}catch{return defaultData()}}
+function saveLocal(d){localStorage.setItem(APP_KEY,JSON.stringify(normalize(d)))}
+function activeUserId(){return googleUser?googleUser.id:(state.currentUserId||loadLocal().currentUserId)}
+function activeUserName(){
+  if(googleUser)return googleUser.user_metadata?.full_name||googleUser.user_metadata?.name||googleUser.email;
+  let d=loadLocal();
+  return d.users.find(u=>u.id===activeUserId())?.name||'User';
+}
+function getMistakes(){let d=loadLocal();return d.mistakesByUser[activeUserId()]||{}}
+function setMistakes(m){let d=loadLocal();d.mistakesByUser[activeUserId()]=m;saveLocal(d)}
+function ensureProgress(d,id=activeUserId()){
+  d.progressByUser=d.progressByUser||{};
+  d.progressByUser[id]=normalizeProgress(d.progressByUser[id]);
+  return d.progressByUser[id];
+}
+function ensureToday(p,date=todayKey()){
+  p.dailyByDate=p.dailyByDate||{};
+  if(!p.dailyByDate[date])p.dailyByDate[date]=defaultDay(date);
+  p.dailyByDate[date]={...defaultDay(date),...p.dailyByDate[date],missions:Array.isArray(p.dailyByDate[date].missions)?p.dailyByDate[date].missions:[]};
+  if(p.lastCheckinDate===date)p.dailyByDate[date].checkedIn=true;
+  return p.dailyByDate[date];
+}
+function progressSnapshot(){
+  let d=loadLocal();
+  let p=ensureProgress(d);
+  let day=ensureToday(p);
+  saveLocal(d);
+  return{d,p,day};
+}
+function mutateProgress(fn){
+  let d=loadLocal();
+  let p=ensureProgress(d);
+  let day=ensureToday(p);
+  let result=fn(p,day,d);
+  saveLocal(d);
+  renderDaily();
+  return result;
+}
+function currentStreak(p){
+  return p.lastCheckinDate===todayKey()||p.lastCheckinDate===todayKey(-1)?p.streak||0:0;
+}
+function levelFromXp(xp){
+  let current=LEVELS[0],next=null;
+  for(let i=0;i<LEVELS.length;i++){
+    if(xp>=LEVELS[i].xp){current=LEVELS[i];next=LEVELS[i+1]||null}
+  }
+  return{...current,next,name:levelNames[locale][current.key]};
+}
+function dailyTarget(p){
+  let lv=levelFromXp(p.xp).level;
+  return lv>=5?4:lv>=3?3:2;
+}
+function dailyMissions(){
+  let t=missionText[locale];
+  return[
+    {id:'warmup',...t.warmup,session:'quick',fact:'twoDigit'},
+    {id:'precision',...t.precision,session:'standard',fact:'table'},
+    {id:'speed',...t.speed,session:'challenge',fact:'hard'},
+    {id:'review',...t.review,session:'mistakeReview',fact:'mistakes'}
+  ];
+}
+function dailyAdviceKey(day,p,target){
+  if(day.checkedIn)return 'done';
+  if(day.missions.length>=target)return 'checkin';
+  if(!day.missions.includes('warmup'))return 'warmup';
+  if(!day.missions.includes('precision'))return 'precision';
+  if(!day.missions.includes('speed'))return 'speed';
+  if(!day.missions.includes('review'))return 'review';
+  return 'free';
+}
+function weekLabel(dateKey){
+  let d=new Date(dateKey+'T00:00:00');
+  let zh=['日','一','二','三','四','五','六'];
+  let en=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return locale==='zh'?zh[d.getDay()]:en[d.getDay()];
+}
+function renderWeekMap(p,target){
+  let days=[];
+  for(let i=-6;i<=0;i++){
+    let key=todayKey(i);
+    let day=p.dailyByDate?.[key]||defaultDay(key);
+    let done=!!day.checkedIn;
+    let missions=Array.isArray(day.missions)?day.missions.length:0;
+    let cls=[done?'done':'',i===0?'today':''].filter(Boolean).join(' ');
+    let mark=done?'✓':missions?missions:'·';
+    days.push(`<div class="week-day ${cls}" title="${esc(key)}">
+      <div class="week-mark">${mark}</div>
+      <div class="week-label">${weekLabel(key)}</div>
+      <div class="week-label">${Math.min(missions,target)}/${target}</div>
+    </div>`);
+  }
+  return days.join('');
+}
+function achievementUnlocked(id,p){
+  let days=Object.values(p.dailyByDate||{});
+  if(id==='firstCheckin')return (p.bestStreak||0)>=1||days.some(d=>d.checkedIn);
+  if(id==='streak3')return (p.bestStreak||0)>=3;
+  if(id==='accuracy90')return days.some(d=>(d.bestAccuracy||0)>=90||(d.total&&Math.round(d.correct/d.total*100)>=90));
+  if(id==='speed15')return days.some(d=>(d.challengeCorrect||0)>=15);
+  if(id==='xp500')return (p.xp||0)>=500;
+  return false;
+}
+function addMission(day,id){
+  if(day.missions.includes(id))return false;
+  day.missions.push(id);
+  return true;
+}
+function sessionXp(row){
+  let base=Math.max(0,row.correct*2);
+  let accuracyBonus=row.total&&row.accuracy>=95?14:row.accuracy>=85?9:row.accuracy>=75?4:0;
+  let speedBonus=row.avg&&row.avg<=3&&row.accuracy>=85?6:0;
+  return base+accuracyBonus+speedBonus;
+}
+function recordDaily(row,sec){
+  let earned=0;
+  let newMissions=[];
+  mutateProgress((p,day)=>{
+    let base=sessionXp(row);
+    day.sessions+=1;
+    day.total+=row.total;
+    day.correct+=row.correct;
+    day.seconds+=sec;
+    day.bestAccuracy=Math.max(day.bestAccuracy||0,row.accuracy||0);
+    if(row.sessionMode==='challenge')day.challengeCorrect=Math.max(day.challengeCorrect||0,row.correct||0);
+    if(row.sessionMode==='quick'&&row.total>=10&&addMission(day,'warmup'))newMissions.push('warmup');
+    if(row.total>=10&&row.accuracy>=85&&addMission(day,'precision'))newMissions.push('precision');
+    if(row.sessionMode==='challenge'&&row.correct>=15&&addMission(day,'speed'))newMissions.push('speed');
+    if((row.sessionMode==='mistakeReview'||row.factMode==='mistakes'||(row.sessionMode==='standard'&&row.total>=45))&&addMission(day,'review'))newMissions.push('review');
+    let bonus=newMissions.length*12;
+    earned=base+bonus;
+    day.xp+=earned;
+    p.xp+=earned;
+  });
+  return{earned,newMissions};
+}
+
+function applyLang(){
+  document.documentElement.lang=locale==='zh'?'zh-CN':'en';
+  document.querySelectorAll('[data-i18n]').forEach(x=>x.textContent=tr(x.dataset.i18n));
+  $('langBtn').textContent=locale==='zh'?'English':'中文';
+  E.loginBtn.textContent=tr('login');
+  E.logoutBtn.textContent=tr('logout');
+  $('modeTwoDigit').textContent=modeNames[locale].twoDigit;
+  $('modeTable').textContent=modeNames[locale].table;
+  $('modeHard').textContent=modeNames[locale].hard;
+  $('modeMistakes').textContent=modeNames[locale].mistakes;
+  $('sessionQuick').textContent=sessionNames[locale].quick;
+  $('sessionStandard').textContent=sessionNames[locale].standard;
+  $('sessionChallenge').textContent=sessionNames[locale].challenge;
+  $('sessionMistakeReview').textContent=sessionNames[locale].mistakeReview;
+  updateModeButtons();
+  renderAuth();
+  renderDaily();
+  renderQuestion();
+  renderRecords();
+}
+function renderAuth(){
+  E.statusPill.textContent=googleUser?tr('cloudMode'):tr('guestMode');
+  E.authText.textContent=googleUser?`${tr('loginStatus')}: ${activeUserName()}`:tr('notLogged');
+  E.authNote.textContent=googleUser?tr('savedCloud'):(sb?tr('savedLocal'):tr('localOnly'));
+  E.loginBtn.classList.toggle('hidden',!!googleUser);
+  E.logoutBtn.classList.toggle('hidden',!googleUser);
+  E.loginBtn.disabled=!sb;
+  E.guestUserCard.classList.toggle('hidden',!!googleUser);
+}
+function renderUsers(){
+  let d=loadLocal();
+  state.currentUserId=d.currentUserId;
+  E.userSelect.innerHTML=d.users.map(u=>`<option value="${esc(u.id)}" ${u.id===d.currentUserId?'selected':''}>${esc(u.name)}</option>`).join('');
+}
+function renderProfile(){
+  E.currentIdentity.textContent=activeUserName();
+  E.displayNameInput.value=activeUserName();
+  E.profileNote.textContent=googleUser?tr('savedCloud'):(sb?tr('savedLocal'):tr('localOnly'));
+}
+function renderDaily(){
+  let {p,day}=progressSnapshot();
+  let level=levelFromXp(p.xp);
+  let target=dailyTarget(p);
+  let done=day.missions.length;
+  let pct=Math.min(100,Math.round(done/target*100));
+  let nextText=level.next?`${tr('nextLevel')}: ${p.xp}/${level.next.xp} XP`:tr('maxLevel');
+  E.dailyTitle.textContent=`${activeUserName()} · ${todayKey()}`;
+  E.dailySubtitle.textContent=`${tr('target')} ${done}/${target} · ${tr('correct')} ${day.correct}/${day.total} · ${nextText}`;
+  E.statStreak.textContent=currentStreak(p);
+  E.statBestStreak.textContent=p.bestStreak||0;
+  E.statLevel.textContent=`Lv.${level.level}`;
+  E.statXp.textContent=p.xp;
+  E.dailyProgressText.textContent=`${tr('dailyProgress')} ${done}/${target}`;
+  E.dailyProgressFill.style.width=`${pct}%`;
+  E.dailyXpText.textContent=`+${day.xp||0} XP`;
+  E.dailyAdvice.textContent=adviceText[locale][dailyAdviceKey(day,p,target)];
+  E.weekMap.innerHTML=renderWeekMap(p,target);
+  E.checkinBtn.textContent=day.checkedIn?tr('checkedIn'):tr('checkin');
+  E.checkinBtn.disabled=!!day.checkedIn;
+  let firstOpen=dailyMissions().findIndex(m=>!day.missions.includes(m.id));
+  E.missionRoad.innerHTML=dailyMissions().map((m,i)=>{
+    let isDone=day.missions.includes(m.id);
+    let cls=isDone?'done':i===firstOpen?'current':'';
+    return `<div class="mission ${cls}">
+      <div class="mission-top"><div class="mission-index">${isDone?'✓':i+1}</div><span class="label">${isDone?tr('missionDone'):''}</span></div>
+      <div class="mission-title">${esc(m.title)}</div>
+      <div class="mission-meta">${esc(m.meta)}</div>
+      <button type="button" data-mission-start="${esc(m.id)}" class="${isDone?'':'primary'}">${isDone?tr('again'):tr('start')}</button>
+    </div>`;
+  }).join('');
+  E.achievementList.innerHTML=achievementText[locale].map(a=>{
+    let unlocked=achievementUnlocked(a.id,p);
+    return `<div class="badge ${unlocked?'unlocked':''}">
+      <div class="badge-icon">${esc(a.icon)}</div>
+      <div class="badge-title">${esc(a.title)}</div>
+      <div class="badge-meta">${unlocked?tr('unlocked'):esc(a.meta)}</div>
+    </div>`;
+  }).join('');
+  E.levelTrack.innerHTML=LEVELS.map(l=>{
+    let cls=p.xp>=l.xp?'done':'';
+    if(l.level===level.level)cls+=' current';
+    return `<div class="level-step ${cls.trim()}"><span>Lv.${l.level}</span><strong>${esc(levelNames[locale][l.key])}</strong></div>`;
+  }).join('');
+}
+
+async function fingerprint(){
+  try{
+    let raw=[navigator.userAgent,navigator.language,navigator.platform,screen.width,screen.height,Intl.DateTimeFormat().resolvedOptions().timeZone].join('|');
+    let buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+  }catch{return 'fp_'+Date.now()}
+}
+async function registerDevice(){
+  try{
+    let fp=await fingerprint();
+    let payload={device_fingerprint:fp,user_id:googleUser?.id||null,guest_user_id:googleUser?null:activeUserId(),guest_user_name:googleUser?null:activeUserName(),user_agent:navigator.userAgent,language:navigator.language,platform:navigator.platform,screen_width:screen.width,screen_height:screen.height,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,last_seen_at:new Date().toISOString()};
+    if(!sb){
+      device=null;
+      E.deviceInfo.textContent=`Device: ${fp} · local`;
+      return;
+    }
+    let {data}=await sb.from('math_devices').upsert(payload,{onConflict:'device_fingerprint'}).select().single();
+    device=data||null;
+    E.deviceInfo.textContent=`Device: ${fp} · ${payload.screen_width}×${payload.screen_height}`;
+    localStorage.setItem('math_last_guest_user_id',activeUserId());
+    localStorage.setItem('math_last_guest_user_name',activeUserName());
+  }catch(e){console.warn(e)}
+}
+async function initAuth(){
+  saveLocal(loadLocal());
+  renderUsers();
+  renderProfile();
+  applyLang();
+  startNewSet();
+  registerDevice();
+  if(!sb)return;
+  let {data:{session}}=await sb.auth.getSession();
+  googleUser=session?.user||null;
+  if(googleUser)await upsertProfile().catch(console.warn);
+  renderAuth();
+  renderProfile();
+  renderDaily();
+  renderRecords();
+  sb.auth.onAuthStateChange(async(_,s)=>{
+    googleUser=s?.user||null;
+    if(googleUser)await upsertProfile().catch(console.warn);
+    renderAuth();
+    renderProfile();
+    renderDaily();
+    renderRecords();
+    startNewSet();
+    registerDevice();
+  });
+}
+async function upsertProfile(){
+  if(!sb||!googleUser)return;
+  let m=googleUser.user_metadata||{};
+  await sb.from('profiles').upsert({id:googleUser.id,email:googleUser.email,display_name:m.full_name||m.name||googleUser.email,avatar_url:m.avatar_url||m.picture||null,locale},{onConflict:'id'});
+}
+async function login(){
+  if(!sb)return;
+  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+}
+async function logout(){
+  if(sb)await sb.auth.signOut();
+  googleUser=null;
+  renderAuth();
+  renderDaily();
+  startNewSet();
+}
+async function saveName(){
+  let name=E.displayNameInput.value.trim();
+  if(!name)return;
+  if(googleUser){
+    googleUser.user_metadata=googleUser.user_metadata||{};
+    googleUser.user_metadata.full_name=name;
+    if(sb)sb.from('profiles').upsert({id:googleUser.id,email:googleUser.email,display_name:name,locale},{onConflict:'id'}).then(()=>{}).catch(console.warn);
+  }else{
+    let d=loadLocal();
+    let u=d.users.find(x=>x.id===activeUserId());
+    if(u)u.name=name;
+    saveLocal(d);
+  }
+  renderUsers();
+  renderProfile();
+  renderDaily();
+  renderRecords();
+  startNewSet();
+  registerDevice();
+}
+function addUser(){
+  let name=$('newUserName').value.trim();
+  if(!name)return;
+  let d=loadLocal();
+  let u=d.users.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(u)d.currentUserId=u.id;
+  else{
+    let id='u_'+Date.now();
+    d.users.push({id,name});
+    d.mistakesByUser[id]={};
+    d.progressByUser[id]=defaultProgress();
+    d.currentUserId=id;
+  }
+  saveLocal(d);
+  $('newUserName').value='';
+  renderUsers();
+  renderProfile();
+  renderDaily();
+  renderRecords();
+  startNewSet();
+  registerDevice();
+}
+function switchUser(id){
+  let d=loadLocal();
+  d.currentUserId=id;
+  saveLocal(d);
+  state.currentUserId=id;
+  renderProfile();
+  renderDaily();
+  renderRecords();
+  startNewSet();
+  registerDevice();
+}
+
+function q(a,b){return{a,b,answer:a*b}}
+function r(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function keyOf(x){return `${x.a}×${x.b}`}
+function poolTwo(){let p=[];for(let a=2;a<=49;a++)for(let b=2;b<=9;b++){let ans=a*b;if(ans>=10&&ans<=99)p.push(q(a,b))}return p}
+function poolTable(){let p=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)p.push(q(a,b));return p}
+const hard=[[6,7],[7,6],[6,8],[8,6],[7,8],[8,7],[7,9],[9,7],[8,9],[9,8],[6,6],[7,7],[8,8],[9,9],[4,8],[8,4],[3,9],[9,3]];
+function poolHard(){let p=hard.map(x=>q(x[0],x[1]));for(let a=11;a<=24;a++)for(let b=3;b<=8;b++){let ans=a*b;if(ans<=99)p.push(q(a,b))}return p}
+function poolMistakes(){
+  let vals=Object.values(getMistakes());
+  if(!vals.length)return poolTwo();
+  let w=[];
+  vals.forEach(m=>{for(let i=0;i<Math.min(9,2+(m.wrong||1)+(m.slow||0));i++)w.push(q(m.a,m.b))});
+  return w;
+}
+function generate(){
+  let fm=state.sessionMode==='mistakeReview'?'mistakes':state.factMode;
+  let pool=fm==='table'?poolTable():fm==='hard'?poolHard():fm==='mistakes'?poolMistakes():poolTwo();
+  let w=[...pool];
+  if(fm!=='mistakes')Object.values(getMistakes()).forEach(m=>{for(let i=0;i<Math.min(6,1+(m.wrong||1));i++)w.push(q(m.a,m.b))});
+  let out=[],need=targetTotal();
+  while(out.length<need){
+    let one=w[r(0,w.length-1)];
+    if(!out.slice(-6).some(x=>x.a===one.a&&x.b===one.b))out.push({...one});
+  }
+  return out;
+}
+function updateModeButtons(){
+  ['TwoDigit','Table','Hard','Mistakes'].forEach(x=>$('mode'+x).classList.remove('active'));
+  ['Quick','Standard','Challenge','MistakeReview'].forEach(x=>$('session'+x).classList.remove('active'));
+  $({twoDigit:'modeTwoDigit',table:'modeTable',hard:'modeHard',mistakes:'modeMistakes'}[state.factMode]).classList.add('active');
+  $({quick:'sessionQuick',standard:'sessionStandard',challenge:'sessionChallenge',mistakeReview:'sessionMistakeReview'}[state.sessionMode]).classList.add('active');
+}
+function selectFactMode(m){state.factMode=m;updateModeButtons()}
+function selectSessionMode(m){state.sessionMode=m;if(m==='mistakeReview')state.factMode='mistakes';updateModeButtons()}
+function setFactMode(m){selectFactMode(m);startNewSet()}
+function setSessionMode(m){selectSessionMode(m);startNewSet()}
+function startMission(id){
+  let mission=dailyMissions().find(m=>m.id===id);
+  if(!mission)return;
+  selectSessionMode(mission.session);
+  selectFactMode(mission.fact);
+  startNewSet();
+  document.querySelector('.question-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function startNewSet(){
+  clearInterval(state.timer);
+  Object.assign(state,{questions:generate(),index:0,input:'',correct:0,answers:[],startedAt:Date.now(),currentStartedAt:Date.now(),finished:false,submitting:false});
+  E.summary.classList.remove('show');
+  E.feedback.className='feedback';
+  E.feedback.textContent=`${activeUserName()}，${tr('enter')}`;
+  state.timer=setInterval(tick,250);
+  renderQuestion();
+  updateStats();
+  renderMistakeBank();
+  renderDaily();
+}
+function cq(){return state.questions[state.index]}
+function renderQuestion(){
+  let total=isChallenge()?'60s':targetTotal();
+  if(state.finished){
+    E.progressText.textContent=`${activeUserName()} · ${state.answers.length}/${total}`;
+    return;
+  }
+  let x=cq();
+  if(!x)return;
+  E.question.textContent=`${x.a} × ${x.b}`;
+  E.answerDisplay.textContent=state.input||' ';
+  E.progressText.textContent=`${activeUserName()} · ${state.index+1}/${total}`;
+  E.barFill.style.width=isChallenge()?`${Math.min(100,elapsed()/60*100)}%`:`${state.index/targetTotal()*100}%`;
+}
+function elapsed(){return Math.floor((Date.now()-state.startedAt)/1000)}
+function tick(){
+  if(state.finished)return;
+  let sec=elapsed();
+  E.timerText.textContent=isChallenge()?`${Math.max(0,60-sec)}s`:`${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
+  if(isChallenge()){
+    E.barFill.style.width=`${Math.min(100,sec/60*100)}%`;
+    if(sec>=60)finishSet();
+  }
+}
+function updateStats(){
+  let done=state.answers.length;
+  let acc=done?Math.round(state.correct/done*100):0;
+  let avg=done?(state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1):'0';
+  E.statCount.textContent=`${done}/${isChallenge()?'60s':targetTotal()}`;
+  E.statCorrect.textContent=state.correct;
+  E.statAccuracy.textContent=acc+'%';
+  E.statAvg.textContent=avg+'s';
+}
+function digit(d){
+  if(state.finished)startNewSet();
+  if(state.input.length<3){
+    state.input+=d;
+    E.answerDisplay.textContent=state.input;
+  }
+}
+function del(){
+  state.input=state.input.slice(0,-1);
+  E.answerDisplay.textContent=state.input||' ';
+}
+function saveMistakeLocal(x,ok,time){
+  let ms={...getMistakes()},k=keyOf(x),slow=time>5000;
+  if(!ms[k])ms[k]={a:x.a,b:x.b,answer:x.answer,wrong:0,slow:0,rightStreak:0,lastTime:0};
+  let it=ms[k];
+  it.lastTime=Date.now();
+  if(ok){
+    it.rightStreak++;
+    if(slow)it.slow++;
+    if(it.rightStreak>=3&&!slow)delete ms[k];
+  }else{
+    it.wrong++;
+    it.rightStreak=0;
+  }
+  setMistakes(ms);
+  renderMistakeBank();
+  return ms[k];
+}
+function syncMistake(x,item){
+  if(!sb||!item)return;
+  let payload={device_id:device?.id||null,a:x.a,b:x.b,answer:x.answer,wrong_count:item.wrong||0,slow_count:item.slow||0,right_streak:item.rightStreak||0,is_resolved:false,updated_at:new Date().toISOString()};
+  if(googleUser)Object.assign(payload,{user_id:googleUser.id});
+  else Object.assign(payload,{guest_user_id:activeUserId(),guest_user_name:activeUserName()});
+  sb.from('math_mistake_facts').upsert(payload,{onConflict:googleUser?'user_id,a,b':'guest_user_id,device_id,a,b'}).then(()=>{}).catch(console.warn);
+}
+function submitAnswer(){
+  if(state.submitting||state.finished)return;
+  let x=cq();
+  if(!x)return;
+  if(!state.input){
+    E.feedback.className='feedback bad';
+    E.feedback.textContent=tr('inputFirst');
+    return;
+  }
+  state.submitting=true;
+  let ua=Number(state.input),time=Date.now()-state.currentStartedAt,ok=ua===x.answer;
+  if(ok)state.correct++;
+  let item=saveMistakeLocal(x,ok,time);
+  syncMistake(x,item);
+  state.answers.push({...x,userAnswer:ua,ok,time,userId:activeUserId(),userName:activeUserName(),deviceId:device?.id||null});
+  E.feedback.className=ok?'feedback good':'feedback bad';
+  E.feedback.textContent=ok?`✓ ${x.a}×${x.b}=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;
+  updateStats();
+  setTimeout(()=>{
+    state.submitting=false;
+    state.index++;
+    state.input='';
+    state.currentStartedAt=Date.now();
+    if(!isChallenge()&&state.index>=targetTotal())finishSet();
+    else{
+      E.feedback.className='feedback';
+      E.feedback.textContent=tr('continue');
+      if(!cq())state.questions.push(...generate());
+      renderQuestion();
+    }
+  },ok?260:780);
+}
+function sessionModeDb(){return `${state.factMode}_${state.sessionMode}`}
+function saveHistoryLocal(sec){
+  let done=state.answers.length;
+  let acc=done?Math.round(state.correct/done*100):0;
+  let avg=done?Number((state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1)):0;
+  let d=loadLocal();
+  let row={id:'h_'+Date.now(),userId:activeUserId(),userName:activeUserName(),factMode:state.factMode,sessionMode:state.sessionMode,mode:sessionModeDb(),date:new Date().toISOString(),total:done,correct:state.correct,accuracy:acc,seconds:sec,avg};
+  d.histories.unshift(row);
+  d.histories=d.histories.slice(0,500);
+  saveLocal(d);
+  return row;
+}
+function syncHistory(row){
+  if(!sb)return;
+  let payload={user_id:googleUser?googleUser.id:null,guest_user_id:googleUser?null:row.userId,guest_user_name:googleUser?null:row.userName,device_id:device?.id||null,mode:row.mode,total_questions:row.total,correct_count:row.correct,accuracy:row.accuracy,total_seconds:row.seconds,avg_seconds:row.avg,wrong_count:state.answers.filter(a=>!a.ok).length,locale,details:state.answers};
+  sb.from('math_test_results').insert(payload).then(()=>{}).catch(console.warn);
+}
+function finishSet(){
+  if(state.finished)return;
+  state.finished=true;
+  clearInterval(state.timer);
+  let sec=elapsed();
+  E.barFill.style.width='100%';
+  E.question.textContent=tr('done');
+  E.answerDisplay.textContent='✓';
+  let row=saveHistoryLocal(sec);
+  let daily=recordDaily(row,sec);
+  syncHistory(row);
+  renderSummary(sec,daily);
+  renderRecords();
+  renderDaily();
+}
+function renderSummary(sec,daily){
+  let done=state.answers.length;
+  let acc=done?Math.round(state.correct/done*100):0;
+  let avg=done?(state.answers.reduce((s,a)=>s+a.time,0)/done/1000).toFixed(1):'0';
+  let bonus=daily&&daily.earned?` · ${tr('gainedXp')} +${daily.earned}`:'';
+  E.summary.classList.add('show');
+  E.summaryText.textContent=`${activeUserName()} · ${sessionNames[locale][state.sessionMode]}: ${state.correct}/${done}, ${acc}%, ${sec}s, ${avg}s/q${bonus}`;
+  let list=state.answers.filter(a=>!a.ok||a.time>5000).slice(0,24);
+  E.mistakeList.innerHTML=list.length?list.map(x=>`<div class="item">${x.a}×${x.b}=${x.answer}<br><span class="label">${x.ok?'slow':'wrong'}</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`;
+  let {day,p}=progressSnapshot();
+  if(!day.checkedIn&&day.missions.length>=dailyTarget(p)){
+    E.feedback.className='feedback good';
+    E.feedback.textContent=tr('readyCheckin');
+  }
+}
+function checkIn(){
+  let status='bad',message='';
+  mutateProgress((p,day)=>{
+    let target=dailyTarget(p);
+    if(day.checkedIn){
+      status='good';
+      message=tr('checkinDone');
+      return;
+    }
+    if(day.missions.length<target){
+      message=tr('checkinNeed')+(target-day.missions.length);
+      return;
+    }
+    let yesterday=todayKey(-1);
+    p.streak=p.lastCheckinDate===yesterday?(p.streak||0)+1:1;
+    p.bestStreak=Math.max(p.bestStreak||0,p.streak);
+    p.lastCheckinDate=todayKey();
+    day.checkedIn=true;
+    let bonus=30+Math.min(20,p.streak*2);
+    p.xp+=bonus;
+    day.xp+=bonus;
+    status='good';
+    message=`${tr('todayComplete')} · +${bonus} XP`;
+  });
+  E.feedback.className=status==='good'?'feedback good':'feedback bad';
+  E.feedback.textContent=message;
+}
+
+function renderRecords(){renderHistory();renderLeaderboard();renderMistakeBank()}
+function fmtDate(x){return x?new Date(x).toLocaleString():''}
+function fmtTime(s){return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
+function rowSession(h){return sessionNames[locale][h.sessionMode]||h.sessionMode||''}
+function rowMode(h){return modeNames[locale][h.factMode]||modeNames[locale][String(h.mode||'').split('_')[0]]||h.mode||''}
+function localRows(){return loadLocal().histories.filter(h=>h.userId===activeUserId())}
+function renderHistory(){
+  let rows=localRows().slice(0,30);
+  E.historyBody.innerHTML=rows.length?rows.map(h=>`<tr><td>${esc(fmtDate(h.date))}</td><td>${esc(h.userName)}</td><td>${esc(rowSession(h))}</td><td>${esc(rowMode(h))}</td><td>${h.correct}/${h.total}</td><td>${h.accuracy}%</td><td>${fmtTime(h.seconds)}</td><td>${h.avg}s</td></tr>`).join(''):`<tr><td colspan="8">${tr('noHistory')}</td></tr>`;
+}
+function renderLeaderboard(){
+  let rows=[...loadLocal().histories].sort((a,b)=>b.accuracy-a.accuracy||b.correct-a.correct||a.seconds-b.seconds).slice(0,20);
+  E.leaderboardBody.innerHTML=rows.length?rows.map((h,i)=>`<tr><td>${i+1}</td><td>${esc(h.userName)}</td><td>${esc(rowSession(h))}</td><td>${esc(rowMode(h))}</td><td>${h.correct}/${h.total}</td><td>${h.accuracy}%</td><td>${fmtTime(h.seconds)}</td><td>${h.avg}s</td></tr>`).join(''):'<tr><td colspan="8">-</td></tr>';
+}
+function renderMistakeBank(){
+  let vals=Object.values(getMistakes()).sort((a,b)=>(b.wrong||0)-(a.wrong||0)||b.lastTime-a.lastTime);
+  E.mistakeOwner.textContent=`${tr('mistakes')}: ${activeUserName()} · ${device?.device_fingerprint||'local'}`;
+  E.mistakeBank.innerHTML=vals.length?vals.map(m=>`<div class="item">${m.a}×${m.b}=${m.answer}<br><span class="label">${m.wrong||0} wrong · ${m.slow||0} slow</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`;
+}
+function showAnswer(){
+  let x=cq();
+  if(!x)return;
+  E.feedback.className='feedback bad';
+  E.feedback.textContent=`${x.a}×${x.b}=${x.answer}`;
+  let item=saveMistakeLocal(x,false,9999);
+  syncMistake(x,item);
+}
+function clearMistakes(){setMistakes({});renderMistakeBank()}
+function showTab(name){
+  ['History','Leaderboard','Mistakes'].forEach(x=>{$('tab'+x).classList.remove('active');$('panel'+x).classList.remove('show')});
+  $('tab'+name).classList.add('active');
+  $('panel'+name).classList.add('show');
+}
+function handleKeyAction(k){
+  if(/^\d$/.test(k))digit(k);
+  else if(k==='delete')del();
+  else if(k==='confirm')submitAnswer();
+}
+
+E.loginBtn.onclick=login;
+E.logoutBtn.onclick=logout;
+E.checkinBtn.onclick=checkIn;
+$('langBtn').onclick=()=>{locale=locale==='zh'?'en':'zh';localStorage.setItem('math_locale',locale);applyLang()};
+$('saveNameBtn').onclick=saveName;
+$('addUserBtn').onclick=addUser;
+E.userSelect.onchange=e=>switchUser(e.target.value);
+$('modeTwoDigit').onclick=()=>setFactMode('twoDigit');
+$('modeTable').onclick=()=>setFactMode('table');
+$('modeHard').onclick=()=>setFactMode('hard');
+$('modeMistakes').onclick=()=>setFactMode('mistakes');
+$('sessionQuick').onclick=()=>setSessionMode('quick');
+$('sessionStandard').onclick=()=>setSessionMode('standard');
+$('sessionChallenge').onclick=()=>setSessionMode('challenge');
+$('sessionMistakeReview').onclick=()=>setSessionMode('mistakeReview');
+$('newSetBtn').onclick=startNewSet;
+$('showAnswerBtn').onclick=showAnswer;
+$('clearBtn').onclick=clearMistakes;
+$('tabHistory').onclick=()=>showTab('History');
+$('tabLeaderboard').onclick=()=>showTab('Leaderboard');
+$('tabMistakes').onclick=()=>showTab('Mistakes');
+document.addEventListener('click',e=>{
+  let btn=e.target.closest('[data-mission-start]');
+  if(btn)startMission(btn.dataset.missionStart);
+});
+document.querySelectorAll('[data-key]').forEach(b=>{
+  b.addEventListener('click',e=>{e.preventDefault();handleKeyAction(b.dataset.key)});
+  b.addEventListener('touchstart',e=>{e.preventDefault();handleKeyAction(b.dataset.key)},{passive:false});
+});
+window.addEventListener('keydown',e=>{
+  if(/^\d$/.test(e.key)){e.preventDefault();digit(e.key)}
+  else if(e.key==='Backspace'){e.preventDefault();del()}
+  else if(e.key==='Enter'){e.preventDefault();submitAnswer()}
+});
 window.SITE_VISIT_LOG_CONFIG={siteCode:'math',siteName:'Multiplication Trainer',getUser:function(){return{userId:googleUser?googleUser.id:null,guestUserId:googleUser?null:activeUserId(),guestUserName:googleUser?null:activeUserName(),deviceId:device&&device.id,deviceFingerprint:device&&device.device_fingerprint,locale}}};
 initAuth();
 </script>
 <script src="./visit-logger.js?v=shared-visit-v5"></script>
-</body></html>
+</body>
+</html>
