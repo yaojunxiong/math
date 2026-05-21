@@ -1,7 +1,10 @@
 -- Multiplication Trainer Supabase schema
+-- Run in Supabase SQL Editor.
 -- Shared auth: auth.users
 -- Shared profile table: profiles
--- Math tables are prefixed with math_
+-- Math-specific tables are prefixed with math_
+
+create extension if not exists pgcrypto;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -19,7 +22,7 @@ create table if not exists public.math_devices (
   user_id uuid references auth.users(id) on delete set null,
   guest_user_id text,
   guest_user_name text,
-  device_fingerprint text not null,
+  device_fingerprint text not null unique,
   user_agent text,
   language text,
   platform text,
@@ -27,8 +30,7 @@ create table if not exists public.math_devices (
   screen_height int,
   timezone text,
   last_seen_at timestamptz default now(),
-  created_at timestamptz default now(),
-  unique(device_fingerprint)
+  created_at timestamptz default now()
 );
 
 create table if not exists public.math_test_results (
@@ -81,25 +83,43 @@ alter table public.math_devices enable row level security;
 alter table public.math_test_results enable row level security;
 alter table public.math_mistake_facts enable row level security;
 
--- Profiles
-create policy if not exists "profiles read authenticated" on public.profiles for select to authenticated using (true);
-create policy if not exists "profiles insert own" on public.profiles for insert to authenticated with check (auth.uid() = id);
-create policy if not exists "profiles update own" on public.profiles for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
+-- Profiles policies
+DROP POLICY IF EXISTS "profiles read authenticated" ON public.profiles;
+CREATE POLICY "profiles read authenticated" ON public.profiles FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "profiles insert own" ON public.profiles;
+CREATE POLICY "profiles insert own" ON public.profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+DROP POLICY IF EXISTS "profiles update own" ON public.profiles;
+CREATE POLICY "profiles update own" ON public.profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
--- Devices: allow inserts from both anon and authenticated so guest devices can be stored.
-create policy if not exists "math_devices insert all" on public.math_devices for insert to anon, authenticated with check (true);
-create policy if not exists "math_devices update all" on public.math_devices for update to anon, authenticated using (true) with check (true);
-create policy if not exists "math_devices read authenticated" on public.math_devices for select to authenticated using (true);
+-- Devices policies: allow guest device registration; authenticated users can inspect devices for admin page.
+DROP POLICY IF EXISTS "math_devices insert all" ON public.math_devices;
+CREATE POLICY "math_devices insert all" ON public.math_devices FOR INSERT TO anon, authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "math_devices update all" ON public.math_devices;
+CREATE POLICY "math_devices update all" ON public.math_devices FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "math_devices read authenticated" ON public.math_devices;
+CREATE POLICY "math_devices read authenticated" ON public.math_devices FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "math_devices read anon own" ON public.math_devices;
+CREATE POLICY "math_devices read anon own" ON public.math_devices FOR SELECT TO anon USING (true);
 
--- Test results: guests can insert; authenticated can insert/read. Admin UI reads as authenticated.
-create policy if not exists "math_test_results insert all" on public.math_test_results for insert to anon, authenticated with check (true);
-create policy if not exists "math_test_results read authenticated" on public.math_test_results for select to authenticated using (true);
-create policy if not exists "math_test_results update authenticated" on public.math_test_results for update to authenticated using (true) with check (true);
+-- Test results policies
+DROP POLICY IF EXISTS "math_test_results insert all" ON public.math_test_results;
+CREATE POLICY "math_test_results insert all" ON public.math_test_results FOR INSERT TO anon, authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "math_test_results read authenticated" ON public.math_test_results;
+CREATE POLICY "math_test_results read authenticated" ON public.math_test_results FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "math_test_results read anon" ON public.math_test_results;
+CREATE POLICY "math_test_results read anon" ON public.math_test_results FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "math_test_results update authenticated" ON public.math_test_results;
+CREATE POLICY "math_test_results update authenticated" ON public.math_test_results FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
--- Mistakes: guests can insert/update their current records; authenticated can read for admin/own display.
-create policy if not exists "math_mistakes insert all" on public.math_mistake_facts for insert to anon, authenticated with check (true);
-create policy if not exists "math_mistakes update all" on public.math_mistake_facts for update to anon, authenticated using (true) with check (true);
-create policy if not exists "math_mistakes read authenticated" on public.math_mistake_facts for select to authenticated using (true);
+-- Mistakes policies
+DROP POLICY IF EXISTS "math_mistakes insert all" ON public.math_mistake_facts;
+CREATE POLICY "math_mistakes insert all" ON public.math_mistake_facts FOR INSERT TO anon, authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "math_mistakes update all" ON public.math_mistake_facts;
+CREATE POLICY "math_mistakes update all" ON public.math_mistake_facts FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "math_mistakes read authenticated" ON public.math_mistake_facts;
+CREATE POLICY "math_mistakes read authenticated" ON public.math_mistake_facts FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "math_mistakes read anon" ON public.math_mistake_facts;
+CREATE POLICY "math_mistakes read anon" ON public.math_mistake_facts FOR SELECT TO anon USING (true);
 
 create index if not exists idx_math_results_rank on public.math_test_results (is_deleted, accuracy desc, correct_count desc, total_seconds asc, avg_seconds asc);
 create index if not exists idx_math_results_user_created on public.math_test_results (user_id, created_at desc);
