@@ -3,6 +3,7 @@
 -- Shared auth: auth.users
 -- Shared profile table: profiles
 -- Math-specific tables are prefixed with math_
+-- Shared site analytics table: site_visit_logs, used by math and TypingJapaneseWords.
 
 create extension if not exists pgcrypto;
 
@@ -30,6 +31,33 @@ create table if not exists public.math_devices (
   screen_height int,
   timezone text,
   last_seen_at timestamptz default now(),
+  created_at timestamptz default now()
+);
+
+-- Shared website access log. Use site_code='math' for this project and site_code='minna' for TypingJapaneseWords.
+create table if not exists public.site_visit_logs (
+  id bigserial primary key,
+  site_code text not null,
+  site_name text,
+  page_url text not null,
+  page_path text,
+  page_title text,
+  referrer text,
+  user_id uuid references auth.users(id) on delete set null,
+  guest_user_id text,
+  guest_user_name text,
+  device_id uuid references public.math_devices(id) on delete set null,
+  device_fingerprint text,
+  session_id text,
+  user_agent text,
+  language text,
+  platform text,
+  screen_width int,
+  screen_height int,
+  timezone text,
+  locale text default 'zh',
+  extra jsonb,
+  visited_at timestamptz default now(),
   created_at timestamptz default now()
 );
 
@@ -80,6 +108,7 @@ where user_id is null and guest_user_id is not null and device_id is not null;
 
 alter table public.profiles enable row level security;
 alter table public.math_devices enable row level security;
+alter table public.site_visit_logs enable row level security;
 alter table public.math_test_results enable row level security;
 alter table public.math_mistake_facts enable row level security;
 
@@ -101,6 +130,14 @@ CREATE POLICY "math_devices read authenticated" ON public.math_devices FOR SELEC
 DROP POLICY IF EXISTS "math_devices read anon own" ON public.math_devices;
 CREATE POLICY "math_devices read anon own" ON public.math_devices FOR SELECT TO anon USING (true);
 
+-- Shared visit log policies
+DROP POLICY IF EXISTS "site_visit_logs insert all" ON public.site_visit_logs;
+CREATE POLICY "site_visit_logs insert all" ON public.site_visit_logs FOR INSERT TO anon, authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "site_visit_logs read authenticated" ON public.site_visit_logs;
+CREATE POLICY "site_visit_logs read authenticated" ON public.site_visit_logs FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "site_visit_logs update authenticated" ON public.site_visit_logs;
+CREATE POLICY "site_visit_logs update authenticated" ON public.site_visit_logs FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
 -- Test results policies
 DROP POLICY IF EXISTS "math_test_results insert all" ON public.math_test_results;
 CREATE POLICY "math_test_results insert all" ON public.math_test_results FOR INSERT TO anon, authenticated WITH CHECK (true);
@@ -121,6 +158,10 @@ CREATE POLICY "math_mistakes read authenticated" ON public.math_mistake_facts FO
 DROP POLICY IF EXISTS "math_mistakes read anon" ON public.math_mistake_facts;
 CREATE POLICY "math_mistakes read anon" ON public.math_mistake_facts FOR SELECT TO anon USING (true);
 
+create index if not exists idx_site_visit_logs_site_time on public.site_visit_logs (site_code, visited_at desc);
+create index if not exists idx_site_visit_logs_user_time on public.site_visit_logs (user_id, visited_at desc);
+create index if not exists idx_site_visit_logs_guest_time on public.site_visit_logs (guest_user_id, visited_at desc);
+create index if not exists idx_site_visit_logs_device_time on public.site_visit_logs (device_fingerprint, visited_at desc);
 create index if not exists idx_math_results_rank on public.math_test_results (is_deleted, accuracy desc, correct_count desc, total_seconds asc, avg_seconds asc);
 create index if not exists idx_math_results_user_created on public.math_test_results (user_id, created_at desc);
 create index if not exists idx_math_results_guest_created on public.math_test_results (guest_user_id, created_at desc);
