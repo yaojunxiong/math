@@ -511,7 +511,7 @@ const I={
     summary:'本轮结果',history:'测试历史',leaderboard:'排行榜',mistakes:'错题库',time:'时间',user:'用户',session:'练习',mode:'模式',score:'得分',seconds:'用时',
     guestMode:'访客模式',cloudMode:'Google 云端模式',notLogged:'未登录：使用本机用户',login:'Google 登录',logout:'退出登录',
     savedLocal:'本机已保存；云端可用时后台同步。',savedCloud:'Google 已登录；数据库后台同步。',localOnly:'本机模式：云端组件暂不可用。',
-    noHistory:'当前用户还没有测试历史。',noMistakes:'当前用户暂无错题',continue:'继续，加油！',done:'完成！',enter:'输入答案后点确认。',inputFirst:'先输入答案哦。',
+    noHistory:'当前用户还没有测试历史。',noMistakes:'当前用户暂无错题',noMistakeStart:'当前没有错题，先做一轮普通练习再回来。',continue:'继续，加油！',done:'完成！',enter:'输入答案后点确认。',inputFirst:'先输入答案哦。',
     start:'开始',again:'再练一次',missionDone:'已完成',dailyProgress:'今日进度',target:'目标',nextLevel:'下一等级',maxLevel:'已达最高等级',
     checkinNeed:'还差任务数：',checkinDone:'今天已经打卡。',todayComplete:'今日打卡完成',readyCheckin:'可以打卡了',gainedXp:'获得成长值'
   },
@@ -529,7 +529,7 @@ const I={
     summary:'Result',history:'History',leaderboard:'Leaderboard',mistakes:'Mistakes',time:'Time',user:'User',session:'Practice',mode:'Mode',score:'Score',seconds:'Seconds',
     guestMode:'Guest mode',cloudMode:'Google cloud mode',notLogged:'Not signed in: local users',login:'Google sign in',logout:'Sign out',
     savedLocal:'Saved locally; syncs when cloud is available.',savedCloud:'Google signed in; syncing in background.',localOnly:'Local mode: cloud component unavailable.',
-    noHistory:'No history for current user.',noMistakes:'No mistakes for current user',continue:'Keep going!',done:'Done!',enter:'Enter answer and tap OK.',inputFirst:'Enter an answer first.',
+    noHistory:'No history for current user.',noMistakes:'No mistakes for current user',noMistakeStart:'No mistakes yet. Do a normal set first.',continue:'Keep going!',done:'Done!',enter:'Enter answer and tap OK.',inputFirst:'Enter an answer first.',
     start:'Start',again:'Again',missionDone:'Done',dailyProgress:'Daily progress',target:'Target',nextLevel:'Next level',maxLevel:'Max level reached',
     checkinNeed:'Missions left: ',checkinDone:'Already checked in today.',todayComplete:'Daily check-in complete',readyCheckin:'Ready to check in',gainedXp:'XP gained'
   }
@@ -608,7 +608,7 @@ const defaultUsers=[{id:'u_junjun',name:'JUNJUN'},{id:'u_rourou',name:'ROUROU'}]
 let locale=localStorage.getItem('math_locale')||'zh';
 let googleUser=null;
 let device=null;
-const state={factMode:'twoDigit',sessionMode:'quick',questions:[],index:0,input:'',correct:0,answers:[],startedAt:0,currentStartedAt:0,timer:null,finished:false,currentUserId:null,submitting:false};
+const state={factMode:'twoDigit',sessionMode:'quick',questions:[],index:0,input:'',correct:0,answers:[],startedAt:0,currentStartedAt:0,timer:null,finished:false,currentUserId:null,submitting:false,noMistakeMode:false};
 const $=id=>document.getElementById(id);
 const E={
   statusPill:$('statusPill'),authText:$('authText'),authNote:$('authNote'),loginBtn:$('loginBtn'),logoutBtn:$('logoutBtn'),guestUserCard:$('guestUserCard'),
@@ -1006,7 +1006,7 @@ const hard=[[6,7],[7,6],[6,8],[8,6],[7,8],[8,7],[7,9],[9,7],[8,9],[9,8],[6,6],[7
 function poolHard(){let p=hard.map(x=>q(x[0],x[1]));for(let a=11;a<=24;a++)for(let b=3;b<=8;b++){let ans=a*b;if(ans<=99)p.push(q(a,b))}return p}
 function poolMistakes(){
   let vals=Object.values(getMistakes());
-  if(!vals.length)return poolTwo();
+  if(!vals.length)return [];
   let w=[];
   vals.forEach(m=>{for(let i=0;i<Math.min(9,2+(m.wrong||1)+(m.slow||0));i++)w.push(q(m.a,m.b))});
   return w;
@@ -1014,9 +1014,11 @@ function poolMistakes(){
 function generate(){
   let fm=state.sessionMode==='mistakeReview'?'mistakes':state.factMode;
   let pool=fm==='table'?poolTable():fm==='hard'?poolHard():fm==='mistakes'?poolMistakes():poolTwo();
+  if(fm==='mistakes'&&!pool.length)return [];
   let w=[...pool];
   if(fm!=='mistakes')Object.values(getMistakes()).forEach(m=>{for(let i=0;i<Math.min(6,1+(m.wrong||1));i++)w.push(q(m.a,m.b))});
   let out=[],need=targetTotal();
+  if(!w.length)return out;
   while(out.length<need){
     let one=w[r(0,w.length-1)];
     if(!out.slice(-6).some(x=>x.a===one.a&&x.b===one.b))out.push({...one});
@@ -1043,11 +1045,13 @@ function startMission(id){
 }
 function startNewSet(){
   clearInterval(state.timer);
-  Object.assign(state,{questions:generate(),index:0,input:'',correct:0,answers:[],startedAt:Date.now(),currentStartedAt:Date.now(),finished:false,submitting:false});
+  let generated=generate();
+  let noMistakeMode=(state.sessionMode==='mistakeReview'||state.factMode==='mistakes')&&!generated.length;
+  Object.assign(state,{questions:generated,index:0,input:'',correct:0,answers:[],startedAt:Date.now(),currentStartedAt:Date.now(),finished:noMistakeMode,submitting:false,noMistakeMode});
   E.summary.classList.remove('show');
   E.feedback.className='feedback';
-  E.feedback.textContent=`${activeUserName()}，${tr('enter')}`;
-  state.timer=setInterval(tick,250);
+  E.feedback.textContent=noMistakeMode?tr('noMistakeStart'):`${activeUserName()}，${tr('enter')}`;
+  if(!noMistakeMode)state.timer=setInterval(tick,250);
   renderQuestion();
   updateStats();
   renderMistakeBank();
@@ -1056,6 +1060,14 @@ function startNewSet(){
 function cq(){return state.questions[state.index]}
 function renderQuestion(){
   let total=isChallenge()?'60s':targetTotal();
+  if(state.noMistakeMode){
+    E.question.textContent=tr('mistakeReview');
+    E.answerDisplay.textContent='-';
+    E.progressText.textContent=`${activeUserName()} · 0/0`;
+    E.timerText.textContent='00:00';
+    E.barFill.style.width='0%';
+    return;
+  }
   if(state.finished){
     E.progressText.textContent=`${activeUserName()} · ${state.answers.length}/${total}`;
     return;
@@ -1087,7 +1099,10 @@ function updateStats(){
   E.statAvg.textContent=avg+'s';
 }
 function digit(d){
-  if(state.finished)startNewSet();
+  if(state.finished){
+    if(state.noMistakeMode)return;
+    startNewSet();
+  }
   if(state.input.length<3){
     state.input+=d;
     E.answerDisplay.textContent=state.input;
@@ -1122,7 +1137,7 @@ function syncMistake(x,item){
   sb.from('math_mistake_facts').upsert(payload,{onConflict:googleUser?'user_id,a,b':'guest_user_id,device_id,a,b'}).then(()=>{}).catch(console.warn);
 }
 function submitAnswer(){
-  if(state.submitting||state.finished)return;
+  if(state.submitting||state.finished||state.noMistakeMode)return;
   let x=cq();
   if(!x)return;
   if(!state.input){
