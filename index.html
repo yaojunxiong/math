@@ -379,19 +379,40 @@ td:last-child,th:last-child{border-right:1px solid var(--line);border-radius:0 8
       <button type="button" id="sessionStandard"></button>
       <button type="button" id="sessionChallenge"></button>
       <button type="button" id="sessionMistakeReview"></button>
+      <button type="button" id="sessionCustom"></button>
     </div>
     <p class="small" data-i18n="sessionNote">快速练习积累手感，标准练习冲关，60秒挑战练速度。</p>
+  </section>
+  <section class="card">
+    <h2 data-i18n="customCountTitle">自定义题量</h2>
+    <div class="grid" style="grid-template-columns:2fr 1fr">
+      <input id="customCountInput" type="number" min="10" max="300" step="1">
+      <button type="button" id="saveCustomCountBtn" class="primary" data-i18n="saveCount">保存题量</button>
+    </div>
+    <p class="small" data-i18n="customCountNote">用于“自定义题量”练习，推荐 100 题。</p>
   </section>
 
   <section class="card">
     <h2 data-i18n="questionType">题目类型</h2>
     <div class="grid">
       <button type="button" id="modeTwoDigit" class="active"></button>
+      <button type="button" id="modeMul2x2"></button>
       <button type="button" id="modeTable"></button>
       <button type="button" id="modeHard"></button>
       <button type="button" id="modeMistakes"></button>
+      <button type="button" id="modeEquation"></button>
+      <button type="button" id="modeLinear2"></button>
     </div>
     <p class="small" data-i18n="inputNote">统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。</p>
+  </section>
+  <section class="card">
+    <h2 data-i18n="difficulty">难度模式</h2>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      <button type="button" id="difficultyEasy"></button>
+      <button type="button" id="difficultyMedium" class="active"></button>
+      <button type="button" id="difficultyHard"></button>
+    </div>
+    <p class="small" data-i18n="difficultyNote">主要影响方程式学习出题范围；建议先中再难。</p>
   </section>
 
   <section class="card stats">
@@ -485,6 +506,7 @@ td:last-child,th:last-child{border-right:1px solid var(--line);border-radius:0 8
     <button type="button" class="key" data-key="1">1</button>
     <button type="button" class="key" data-key="2">2</button>
     <button type="button" class="key" data-key="3">3</button>
+    <button type="button" class="key" data-key="minus">-</button>
     <button type="button" class="key" data-key="0">0</button>
     <button type="button" class="key delete" data-key="delete">⌫</button>
     <button type="button" id="okBtn" class="key confirm" data-key="confirm">OK</button>
@@ -504,9 +526,11 @@ const I={
     guestUser:'访客用户',currentUser:'当前用户',newUser:'新增用户',addUser:'添加用户',guestNote:'默认用户：JUNJUN、ROUROU。可继续添加其他用户。',
     todayChallenge:'今日闯关',checkin:'完成今日打卡',checkedIn:'今日已打卡',streak:'连续打卡',bestStreak:'最佳连续',level:'等级',xp:'成长值',
     todayAdvice:'今日建议',weekMap:'7天打卡图',badges:'成长徽章',unlocked:'已获得',locked:'待解锁',
-    practiceMode:'练习模式',quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习',
+    practiceMode:'练习模式',quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习',custom:'自定义题量',
     sessionNote:'快速练习积累手感，标准练习冲关，60秒挑战练速度。',
+    customCountTitle:'自定义题量',saveCount:'保存题量',customCountNote:'用于“自定义题量”练习，推荐 100 题。',
     questionType:'题目类型',inputNote:'统一使用大按钮数字键盘。MacBook 可直接按数字、Enter、Backspace。',
+    difficulty:'难度模式',difficultyNote:'主要影响方程式学习出题范围；建议先中再难。',easy:'易',medium:'中',hardLevel:'难',
     questions:'题目',correct:'正确',accuracy:'正确率',avg:'平均用时',newTest:'开始新测试',showAnswer:'显示答案',clearMistakes:'清空当前用户错题',
     summary:'本轮结果',history:'测试历史',leaderboard:'排行榜',mistakes:'错题库',time:'时间',user:'用户',session:'练习',mode:'模式',score:'得分',seconds:'用时',
     guestMode:'访客模式',cloudMode:'Google 云端模式',notLogged:'未登录：使用本机用户',login:'Google 登录',logout:'退出登录',
@@ -522,9 +546,11 @@ const I={
     guestUser:'Guest users',currentUser:'Current user',newUser:'New user',addUser:'Add user',guestNote:'Default users: JUNJUN and ROUROU. You can add more users.',
     todayChallenge:'Daily Quest',checkin:'Check in today',checkedIn:'Checked in',streak:'Streak',bestStreak:'Best streak',level:'Level',xp:'XP',
     todayAdvice:'Today\'s focus',weekMap:'7-day map',badges:'Growth badges',unlocked:'Unlocked',locked:'Locked',
-    practiceMode:'Practice mode',quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review',
+    practiceMode:'Practice mode',quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review',custom:'Custom count',
     sessionNote:'Quick builds rhythm, standard clears checkpoints, 60s challenge trains speed.',
+    customCountTitle:'Custom Count',saveCount:'Save Count',customCountNote:'Used by custom-count practice. Recommended: 100.',
     questionType:'Question type',inputNote:'Large number buttons. MacBook number keys, Enter and Backspace also work.',
+    difficulty:'Difficulty',difficultyNote:'Mainly affects equation question ranges.',easy:'Easy',medium:'Medium',hardLevel:'Hard',
     questions:'Questions',correct:'Correct',accuracy:'Accuracy',avg:'Avg time',newTest:'New test',showAnswer:'Show answer',clearMistakes:'Clear current mistakes',
     summary:'Result',history:'History',leaderboard:'Leaderboard',mistakes:'Mistakes',time:'Time',user:'User',session:'Practice',mode:'Mode',score:'Score',seconds:'Seconds',
     guestMode:'Guest mode',cloudMode:'Google cloud mode',notLogged:'Not signed in: local users',login:'Google sign in',logout:'Sign out',
@@ -535,12 +561,12 @@ const I={
   }
 };
 const modeNames={
-  zh:{twoDigit:'两位数专项',table:'99乘法表',hard:'难点专项',mistakes:'只练错题'},
-  en:{twoDigit:'Two-digit',table:'9×9 table',hard:'Hard facts',mistakes:'Mistakes only'}
+  zh:{twoDigit:'两位数专项',mul2x2:'两位×两位',table:'99乘法表',hard:'难点专项',mistakes:'只练错题',equation:'方程式学习',linear2:'二元一次'},
+  en:{twoDigit:'Two-digit',mul2x2:'2-digit × 2-digit',table:'9×9 table',hard:'Hard facts',mistakes:'Mistakes only',equation:'Equation',linear2:'Two-variable'}
 };
 const sessionNames={
-  zh:{quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习'},
-  en:{quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review'}
+  zh:{quick:'10题快速',standard:'45题标准',challenge:'60秒挑战',mistakeReview:'错题复习',custom:'自定义题量'},
+  en:{quick:'10Q Quick',standard:'45Q Standard',challenge:'60s Challenge',mistakeReview:'Mistake Review',custom:'Custom count'}
 };
 const missionText={
   zh:{
@@ -608,7 +634,7 @@ const defaultUsers=[{id:'u_junjun',name:'JUNJUN'},{id:'u_rourou',name:'ROUROU'}]
 let locale=localStorage.getItem('math_locale')||'zh';
 let googleUser=null;
 let device=null;
-const state={factMode:'twoDigit',sessionMode:'quick',questions:[],index:0,input:'',correct:0,answers:[],startedAt:0,currentStartedAt:0,timer:null,finished:false,currentUserId:null,submitting:false,noMistakeMode:false};
+const state={factMode:'twoDigit',sessionMode:'quick',difficulty:localStorage.getItem('math_difficulty')||'medium',customCount:Number(localStorage.getItem('math_custom_count'))||100,questions:[],index:0,input:'',correct:0,answers:[],startedAt:0,currentStartedAt:0,timer:null,finished:false,currentUserId:null,submitting:false,noMistakeMode:false};
 const $=id=>document.getElementById(id);
 const E={
   statusPill:$('statusPill'),authText:$('authText'),authNote:$('authNote'),loginBtn:$('loginBtn'),logoutBtn:$('logoutBtn'),guestUserCard:$('guestUserCard'),
@@ -620,7 +646,8 @@ const E={
 
 function tr(k){return I[locale][k]||k}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function targetTotal(){return state.sessionMode==='standard'?45:state.sessionMode==='challenge'?999:10}
+function clampCount(v){return Math.max(10,Math.min(300,Number(v)||100))}
+function targetTotal(){return state.sessionMode==='standard'?45:state.sessionMode==='challenge'?999:state.sessionMode==='custom'?clampCount(state.customCount):10}
 function isChallenge(){return state.sessionMode==='challenge'}
 function todayKey(offset=0){let d=new Date();d.setDate(d.getDate()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function defaultProgress(){return{xp:0,streak:0,bestStreak:0,lastCheckinDate:null,dailyByDate:{}}}
@@ -800,14 +827,23 @@ function applyLang(){
   E.loginBtn.textContent=tr('login');
   E.logoutBtn.textContent=tr('logout');
   $('modeTwoDigit').textContent=modeNames[locale].twoDigit;
+  $('modeMul2x2').textContent=modeNames[locale].mul2x2;
   $('modeTable').textContent=modeNames[locale].table;
   $('modeHard').textContent=modeNames[locale].hard;
   $('modeMistakes').textContent=modeNames[locale].mistakes;
+  $('modeEquation').textContent=modeNames[locale].equation;
+  $('modeLinear2').textContent=modeNames[locale].linear2;
+  $('difficultyEasy').textContent=tr('easy');
+  $('difficultyMedium').textContent=tr('medium');
+  $('difficultyHard').textContent=tr('hardLevel');
   $('sessionQuick').textContent=sessionNames[locale].quick;
   $('sessionStandard').textContent=sessionNames[locale].standard;
   $('sessionChallenge').textContent=sessionNames[locale].challenge;
   $('sessionMistakeReview').textContent=sessionNames[locale].mistakeReview;
+  $('sessionCustom').textContent=sessionNames[locale].custom;
+  $('customCountInput').value=clampCount(state.customCount);
   updateModeButtons();
+  updateDifficultyButtons();
   renderAuth();
   renderDaily();
   renderQuestion();
@@ -997,13 +1033,46 @@ function switchUser(id){
   registerDevice();
 }
 
-function q(a,b){return{a,b,answer:a*b}}
+function q(a,b){return{type:'mul',a,b,answer:a*b}}
 function r(min,max){return Math.floor(Math.random()*(max-min+1))+min}
-function keyOf(x){return `${x.a}×${x.b}`}
+function keyOf(x){return x.type==='eq'||x.type==='sys'?`${x.type}:${x.prompt}`:`${x.a}×${x.b}`}
 function poolTwo(){let p=[];for(let a=2;a<=49;a++)for(let b=2;b<=9;b++){let ans=a*b;if(ans>=10&&ans<=99)p.push(q(a,b))}return p}
+function poolMul2x2(){let p=[];for(let a=10;a<=99;a++)for(let b=10;b<=99;b++)p.push(q(a,b));return p}
 function poolTable(){let p=[];for(let a=2;a<=9;a++)for(let b=2;b<=9;b++)p.push(q(a,b));return p}
 const hard=[[6,7],[7,6],[6,8],[8,6],[7,8],[8,7],[7,9],[9,7],[8,9],[9,8],[6,6],[7,7],[8,8],[9,9],[4,8],[8,4],[3,9],[9,3]];
 function poolHard(){let p=hard.map(x=>q(x[0],x[1]));for(let a=11;a<=24;a++)for(let b=3;b<=8;b++){let ans=a*b;if(ans<=99)p.push(q(a,b))}return p}
+function poolEquation(){
+  let p=[];
+  let cfg=state.difficulty==='easy'
+    ?{x:[1,12],a:[1,6],b:[-8,8],count:110}
+    :state.difficulty==='hard'
+    ?{x:[-20,25],a:[2,16],b:[-40,40],count:170}
+    :{x:[1,20],a:[2,12],b:[-20,20],count:140};
+  for(let i=0;i<cfg.count;i++){
+    let x=r(cfg.x[0],cfg.x[1]),a=r(cfg.a[0],cfg.a[1]),b=r(cfg.b[0],cfg.b[1]),c=a*x+b;
+    p.push({type:'eq',a,b,c,answer:x,prompt:`${a}x${b>=0?'+':''}${b}=${c}`});
+  }
+  return p;
+}
+function poolLinear2(){
+  let p=[];
+  let cfg=state.difficulty==='easy'
+    ?{x:[1,9],y:[1,9],a:[1,4],b:[1,4],count:100}
+    :state.difficulty==='hard'
+    ?{x:[-12,16],y:[-12,16],a:[-9,9],b:[-9,9],count:140}
+    :{x:[-8,12],y:[-8,12],a:[-6,6],b:[-6,6],count:120};
+  while(p.length<cfg.count){
+    let x=r(cfg.x[0],cfg.x[1]),y=r(cfg.y[0],cfg.y[1]);
+    let a1=r(cfg.a[0],cfg.a[1]),b1=r(cfg.b[0],cfg.b[1]),a2=r(cfg.a[0],cfg.a[1]),b2=r(cfg.b[0],cfg.b[1]);
+    if(!a1||!b1||!a2||!b2)continue;
+    let det=a1*b2-a2*b1;
+    if(!det)continue;
+    let c1=a1*x+b1*y,c2=a2*x+b2*y,sum=x+y;
+    let s=t=>`${t>=0?'+':''}${t}`;
+    p.push({type:'sys',answer:sum,prompt:`${a1}x${s(b1)}y=${c1}; ${a2}x${s(b2)}y=${c2}; 求x+y`});
+  }
+  return p;
+}
 function poolMistakes(){
   let vals=Object.values(getMistakes());
   if(!vals.length)return [];
@@ -1013,27 +1082,52 @@ function poolMistakes(){
 }
 function generate(){
   let fm=state.sessionMode==='mistakeReview'?'mistakes':state.factMode;
-  let pool=fm==='table'?poolTable():fm==='hard'?poolHard():fm==='mistakes'?poolMistakes():poolTwo();
+  let pool=fm==='mul2x2'?poolMul2x2():fm==='table'?poolTable():fm==='hard'?poolHard():fm==='mistakes'?poolMistakes():fm==='equation'?poolEquation():fm==='linear2'?poolLinear2():poolTwo();
   if(fm==='mistakes'&&!pool.length)return [];
   let w=[...pool];
-  if(fm!=='mistakes')Object.values(getMistakes()).forEach(m=>{for(let i=0;i<Math.min(6,1+(m.wrong||1));i++)w.push(q(m.a,m.b))});
+  let addMistakeBoost=['twoDigit','mul2x2','table','hard'].includes(fm);
+  if(addMistakeBoost)Object.values(getMistakes()).forEach(m=>{for(let i=0;i<Math.min(6,1+(m.wrong||1));i++)w.push(q(m.a,m.b))});
   let out=[],need=targetTotal();
   if(!w.length)return out;
+  let recentKey=t=>t.type==='mul'?`${t.a}x${t.b}`:`${t.type}:${t.prompt}`;
+  let guard=0;
   while(out.length<need){
     let one=w[r(0,w.length-1)];
-    if(!out.slice(-6).some(x=>x.a===one.a&&x.b===one.b))out.push({...one});
+    if(!out.slice(-6).some(x=>recentKey(x)===recentKey(one)))out.push({...one});
+    guard++;
+    if(guard>5000)break;
   }
   return out;
 }
 function updateModeButtons(){
-  ['TwoDigit','Table','Hard','Mistakes'].forEach(x=>$('mode'+x).classList.remove('active'));
-  ['Quick','Standard','Challenge','MistakeReview'].forEach(x=>$('session'+x).classList.remove('active'));
-  $({twoDigit:'modeTwoDigit',table:'modeTable',hard:'modeHard',mistakes:'modeMistakes'}[state.factMode]).classList.add('active');
-  $({quick:'sessionQuick',standard:'sessionStandard',challenge:'sessionChallenge',mistakeReview:'sessionMistakeReview'}[state.sessionMode]).classList.add('active');
+  ['TwoDigit','Mul2x2','Table','Hard','Mistakes','Equation','Linear2'].forEach(x=>$('mode'+x).classList.remove('active'));
+  ['Quick','Standard','Challenge','MistakeReview','Custom'].forEach(x=>$('session'+x).classList.remove('active'));
+  $({twoDigit:'modeTwoDigit',mul2x2:'modeMul2x2',table:'modeTable',hard:'modeHard',mistakes:'modeMistakes',equation:'modeEquation',linear2:'modeLinear2'}[state.factMode]).classList.add('active');
+  $({quick:'sessionQuick',standard:'sessionStandard',challenge:'sessionChallenge',mistakeReview:'sessionMistakeReview',custom:'sessionCustom'}[state.sessionMode]).classList.add('active');
+}
+function updateDifficultyButtons(){
+  ['Easy','Medium','Hard'].forEach(x=>$('difficulty'+x).classList.remove('active'));
+  $({easy:'difficultyEasy',medium:'difficultyMedium',hard:'difficultyHard'}[state.difficulty]).classList.add('active');
+}
+function setDifficulty(level){
+  state.difficulty=level;
+  localStorage.setItem('math_difficulty',level);
+  updateDifficultyButtons();
+  startNewSet();
+}
+function saveCustomCount(){
+  state.customCount=clampCount($('customCountInput').value);
+  $('customCountInput').value=state.customCount;
+  localStorage.setItem('math_custom_count',String(state.customCount));
+  if(state.sessionMode==='custom')startNewSet();
 }
 function selectFactMode(m){state.factMode=m;updateModeButtons()}
 function selectSessionMode(m){state.sessionMode=m;if(m==='mistakeReview')state.factMode='mistakes';updateModeButtons()}
-function setFactMode(m){selectFactMode(m);startNewSet()}
+function setFactMode(m){
+  if(state.sessionMode==='mistakeReview'&&m!=='mistakes')state.sessionMode='quick';
+  selectFactMode(m);
+  startNewSet();
+}
 function setSessionMode(m){selectSessionMode(m);startNewSet()}
 function startMission(id){
   let mission=dailyMissions().find(m=>m.id===id);
@@ -1074,7 +1168,7 @@ function renderQuestion(){
   }
   let x=cq();
   if(!x)return;
-  E.question.textContent=`${x.a} × ${x.b}`;
+  E.question.textContent=x.type==='mul'?`${x.a} × ${x.b}`:x.prompt.replaceAll('x',' x ').replaceAll('y',' y ');
   E.answerDisplay.textContent=state.input||' ';
   E.progressText.textContent=`${activeUserName()} · ${state.index+1}/${total}`;
   E.barFill.style.width=isChallenge()?`${Math.min(100,elapsed()/60*100)}%`:`${state.index/targetTotal()*100}%`;
@@ -1103,16 +1197,28 @@ function digit(d){
     if(state.noMistakeMode)return;
     startNewSet();
   }
-  if(state.input.length<3){
+  if(state.input.length<6){
     state.input+=d;
     E.answerDisplay.textContent=state.input;
   }
+}
+function minus(){
+  if(state.finished){
+    if(state.noMistakeMode)return;
+    startNewSet();
+  }
+  if(!state.input)state.input='-';
+  else if(state.input==='-')state.input='';
+  else if(state.input.startsWith('-'))state.input=state.input.slice(1);
+  else state.input='-'+state.input;
+  E.answerDisplay.textContent=state.input||' ';
 }
 function del(){
   state.input=state.input.slice(0,-1);
   E.answerDisplay.textContent=state.input||' ';
 }
 function saveMistakeLocal(x,ok,time){
+  if(x.type!=='mul')return null;
   let ms={...getMistakes()},k=keyOf(x),slow=time>5000;
   if(!ms[k])ms[k]={a:x.a,b:x.b,answer:x.answer,wrong:0,slow:0,rightStreak:0,lastTime:0};
   let it=ms[k];
@@ -1130,7 +1236,7 @@ function saveMistakeLocal(x,ok,time){
   return ms[k];
 }
 function syncMistake(x,item){
-  if(!sb||!item)return;
+  if(!sb||!item||x.type!=='mul')return;
   let payload={device_id:device?.id||null,a:x.a,b:x.b,answer:x.answer,wrong_count:item.wrong||0,slow_count:item.slow||0,right_streak:item.rightStreak||0,is_resolved:false,updated_at:new Date().toISOString()};
   if(googleUser)Object.assign(payload,{user_id:googleUser.id});
   else Object.assign(payload,{guest_user_id:activeUserId(),guest_user_name:activeUserName()});
@@ -1140,7 +1246,7 @@ function submitAnswer(){
   if(state.submitting||state.finished||state.noMistakeMode)return;
   let x=cq();
   if(!x)return;
-  if(!state.input){
+  if(!/^-?\d+$/.test(state.input||'')){
     E.feedback.className='feedback bad';
     E.feedback.textContent=tr('inputFirst');
     return;
@@ -1152,7 +1258,8 @@ function submitAnswer(){
   syncMistake(x,item);
   state.answers.push({...x,userAnswer:ua,ok,time,userId:activeUserId(),userName:activeUserName(),deviceId:device?.id||null});
   E.feedback.className=ok?'feedback good':'feedback bad';
-  E.feedback.textContent=ok?`✓ ${x.a}×${x.b}=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;
+  let correctText=x.type==='eq'?`${x.prompt}，x=${x.answer}`:x.type==='sys'?`${x.prompt}，x+y=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;
+  E.feedback.textContent=ok?`✓ ${correctText}`:correctText;
   updateStats();
   setTimeout(()=>{
     state.submitting=false;
@@ -1208,7 +1315,11 @@ function renderSummary(sec,daily){
   E.summary.classList.add('show');
   E.summaryText.textContent=`${activeUserName()} · ${sessionNames[locale][state.sessionMode]}: ${state.correct}/${done}, ${acc}%, ${sec}s, ${avg}s/q${bonus}`;
   let list=state.answers.filter(a=>!a.ok||a.time>5000).slice(0,24);
-  E.mistakeList.innerHTML=list.length?list.map(x=>`<div class="item">${x.a}×${x.b}=${x.answer}<br><span class="label">${x.ok?'slow':'wrong'}</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`;
+  E.mistakeList.innerHTML=list.length?list.map(x=>{
+    let qText=x.type==='eq'?`${x.prompt}，x=${x.answer}`:x.type==='sys'?`${x.prompt}，x+y=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;
+    let ua=x.userAnswer==='SHOW_ANSWER'?'show-answer':(x.userAnswer===null||x.userAnswer===undefined||x.userAnswer==='')?'empty':x.userAnswer;
+    return `<div class="item">${esc(qText)}<br><span class="label">${x.ok?'slow':'wrong'} · ${esc(String(ua))}</span></div>`;
+  }).join(''):`<div class="item">${tr('noMistakes')}</div>`;
   let {day,p}=progressSnapshot();
   if(!day.checkedIn&&day.missions.length>=dailyTarget(p)){
     E.feedback.className='feedback good';
@@ -1263,12 +1374,31 @@ function renderMistakeBank(){
   E.mistakeBank.innerHTML=vals.length?vals.map(m=>`<div class="item">${m.a}×${m.b}=${m.answer}<br><span class="label">${m.wrong||0} wrong · ${m.slow||0} slow</span></div>`).join(''):`<div class="item">${tr('noMistakes')}</div>`;
 }
 function showAnswer(){
+  if(state.submitting||state.finished||state.noMistakeMode)return;
   let x=cq();
   if(!x)return;
+  state.submitting=true;
+  let time=Date.now()-state.currentStartedAt;
   E.feedback.className='feedback bad';
-  E.feedback.textContent=`${x.a}×${x.b}=${x.answer}`;
+  let answerText=x.type==='eq'?`${x.prompt}，x=${x.answer}`:x.type==='sys'?`${x.prompt}，x+y=${x.answer}`:`${x.a}×${x.b}=${x.answer}`;
+  E.feedback.textContent=answerText;
   let item=saveMistakeLocal(x,false,9999);
   syncMistake(x,item);
+  state.answers.push({...x,userAnswer:'SHOW_ANSWER',ok:false,time,userId:activeUserId(),userName:activeUserName(),deviceId:device?.id||null,revealed:true});
+  updateStats();
+  setTimeout(()=>{
+    state.submitting=false;
+    state.index++;
+    state.input='';
+    state.currentStartedAt=Date.now();
+    if(!isChallenge()&&state.index>=targetTotal())finishSet();
+    else{
+      E.feedback.className='feedback';
+      E.feedback.textContent=tr('continue');
+      if(!cq())state.questions.push(...generate());
+      renderQuestion();
+    }
+  },760);
 }
 function clearMistakes(){setMistakes({});renderMistakeBank()}
 function showTab(name){
@@ -1278,6 +1408,7 @@ function showTab(name){
 }
 function handleKeyAction(k){
   if(/^\d$/.test(k))digit(k);
+  else if(k==='minus')minus();
   else if(k==='delete')del();
   else if(k==='confirm')submitAnswer();
 }
@@ -1290,13 +1421,21 @@ $('saveNameBtn').onclick=saveName;
 $('addUserBtn').onclick=addUser;
 E.userSelect.onchange=e=>switchUser(e.target.value);
 $('modeTwoDigit').onclick=()=>setFactMode('twoDigit');
+$('modeMul2x2').onclick=()=>setFactMode('mul2x2');
 $('modeTable').onclick=()=>setFactMode('table');
 $('modeHard').onclick=()=>setFactMode('hard');
 $('modeMistakes').onclick=()=>setFactMode('mistakes');
+$('modeEquation').onclick=()=>setFactMode('equation');
+$('modeLinear2').onclick=()=>setFactMode('linear2');
+$('difficultyEasy').onclick=()=>setDifficulty('easy');
+$('difficultyMedium').onclick=()=>setDifficulty('medium');
+$('difficultyHard').onclick=()=>setDifficulty('hard');
 $('sessionQuick').onclick=()=>setSessionMode('quick');
 $('sessionStandard').onclick=()=>setSessionMode('standard');
 $('sessionChallenge').onclick=()=>setSessionMode('challenge');
 $('sessionMistakeReview').onclick=()=>setSessionMode('mistakeReview');
+$('sessionCustom').onclick=()=>setSessionMode('custom');
+$('saveCustomCountBtn').onclick=saveCustomCount;
 $('newSetBtn').onclick=startNewSet;
 $('showAnswerBtn').onclick=showAnswer;
 $('clearBtn').onclick=clearMistakes;
@@ -1313,6 +1452,7 @@ document.querySelectorAll('[data-key]').forEach(b=>{
 });
 window.addEventListener('keydown',e=>{
   if(/^\d$/.test(e.key)){e.preventDefault();digit(e.key)}
+  else if(e.key==='-'){e.preventDefault();minus()}
   else if(e.key==='Backspace'){e.preventDefault();del()}
   else if(e.key==='Enter'){e.preventDefault();submitAnswer()}
 });
