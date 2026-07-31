@@ -12,7 +12,7 @@ RATE = "-8%"
 PITCH = "-2Hz"
 VOLUME = "+0%"
 TARGET_DURATIONS = [5.9, 7.4, 8.5, 8.1, 7.0, 20.0]
-CHUNK_SIZE = 16000
+CHUNK_SIZE = 4000
 
 SEGMENTS = [
     "失业后，他试过很多项目，却一个也没做成。",
