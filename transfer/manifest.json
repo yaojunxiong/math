@@ -1,0 +1,11 @@
+{
+  "format": "ogg-opus",
+  "voice": "zh-CN-YunxiNeural",
+  "rate": "-8%",
+  "pitch": "-2Hz",
+  "duration_seconds": 56.9,
+  "base64_length": 56164,
+  "chunk_size": 16000,
+  "chunk_count": 4,
+  "sha256": "a7c04e2da6cf78deb782eb0b9bdb2407bfd63b0884fe38a621c693face2e8761"
+}
