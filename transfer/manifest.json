@@ -4,8 +4,8 @@
   "rate": "-8%",
   "pitch": "-2Hz",
   "duration_seconds": 56.9,
-  "base64_length": 56164,
-  "chunk_size": 16000,
-  "chunk_count": 4,
-  "sha256": "a7c04e2da6cf78deb782eb0b9bdb2407bfd63b0884fe38a621c693face2e8761"
+  "base64_length": 56220,
+  "chunk_size": 4000,
+  "chunk_count": 15,
+  "sha256": "30604b4570238915c987ef1b340d978cc6d5f9f9da1168284763f810c0bc9ee5"
 }
