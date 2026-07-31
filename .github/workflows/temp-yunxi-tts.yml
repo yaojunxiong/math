@@ -1,0 +1,31 @@
+name: Temporary Yunxi Narration
+
+on:
+  push:
+    branches:
+      - temp-yunxi-tts-20260801
+    paths:
+      - 'tmp_tts/**'
+      - '.github/workflows/temp-yunxi-tts.yml'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Edge TTS
+        run: python -m pip install --upgrade pip edge-tts
+      - name: Generate six narration segments
+        run: python tmp_tts/generate_yunxi.py
+      - name: Upload narration files
+        uses: actions/upload-artifact@v4
+        with:
+          name: yunxi-narration
+          path: output/*.mp3
+          if-no-files-found: error
+          retention-days: 1
